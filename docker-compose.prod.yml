@@ -1,0 +1,65 @@
+services:
+  app:
+    container_name: app_prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: db_prod
+      DB_USERNAME: db_prod_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      APP_ENV: production
+      APP_DEBUG: false
+      VITE_APP_NAME: highlightsforge
+      APP_NAME: highlightsforge
+    networks:
+      - app_prod_stg
+    volumes:
+      - type: bind
+        source: /var/www/html/prod/storage
+        target: /var/www/html/storage/app/public
+
+  queue_worker:
+    container_name: queue_worker_prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: db_prod
+      DB_USERNAME: db_prod_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      APP_ENV: production
+      APP_DEBUG: false
+      VITE_APP_NAME: highlightsforge
+      APP_NAME: highlightsforge
+    command: >
+      sh -c "php artisan queue:work --sleep=3 --tries=3 --timeout=60"
+    restart: unless-stopped
+    networks:
+      - app_prod_stg
+
+  db:
+    image: postgres:17.6
+    container_name: db_prod
+    volumes:
+      - db-data:/postgresql
+    environment:
+      POSTGRES_DB: db_prod
+      POSTGRES_USER: db_prod_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - app_prod_stg
+
+volumes:
+  db-data:
+
+networks:
+  app_prod_stg:
