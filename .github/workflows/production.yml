@@ -67,7 +67,7 @@ jobs:
         run: ./vendor/bin/pest
 
   deploy:
-    needs: tests
+    needs: [quality, tests]
     timeout-minutes: 10
     environment: prod
     runs-on: self-hosted
