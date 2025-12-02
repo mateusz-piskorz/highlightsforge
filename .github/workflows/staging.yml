@@ -1,0 +1,112 @@
+name: Staging deploy
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Install Dependencies
+        run: |
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          npm install
+
+      - name: Run Pint
+        run: vendor/bin/pint
+
+      - name: Format Frontend
+        run: npm run format
+
+      - name: Lint Frontend
+        run: npm run lint
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy Environment File
+        run: cp .env.example .env
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Build Assets
+        run: npm run build
+
+      - name: Tests
+        run: ./vendor/bin/pest
+
+  deploy:
+    needs: tests
+    timeout-minutes: 10
+    environment: stg
+    runs-on: self-hosted
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+    defaults:
+      run:
+        working-directory: stg
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: stg
+
+      - name: Remove stopped containers
+        run: |
+          docker ps -a -q --filter status=exited | xargs -r docker rm
+
+      - name: Remove dangling images
+        run: |
+          docker images -f "dangling=true" -q | xargs -r docker rmi
+
+      - name: db
+        run: docker compose -f docker-compose.stg.yml up -d db
+
+      - name: app
+        run: |
+          docker compose -f docker-compose.stg.yml up -d --build --force-recreate app
+
+      - name: queue-worker
+        run: |
+          docker compose -f docker-compose.stg.yml up -d --build --force-recreate queue_worker
+
+      # - name: export-static
+      #   run: ./scripts/export-static.sh -c app_stg /var/www/html/stg/
+
+      - name: Prune Docker
+        run: docker system prune -f
