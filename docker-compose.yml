@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app_prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: dev
+      DB_USERNAME: dev
+      DB_PASSWORD: password
+      APP_ENV: production
+    depends_on:
+      - db
+
+  queue_worker:
+    container_name: queue_worker_prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: dev
+      DB_USERNAME: dev
+      DB_PASSWORD: password
+      APP_ENV: production
+    command: >
+      sh -c "php artisan queue:work --sleep=3 --tries=3 --timeout=60"
+    depends_on:
+      - db
+      - app
+    restart: unless-stopped
+  
+  db:
+    image: postgres:17.6
+    container_name: db_prod
+    volumes:
+      - db-data:/postgresql
+    environment:
+      POSTGRES_DB: dev
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    
+
+volumes:
+  db-data:
