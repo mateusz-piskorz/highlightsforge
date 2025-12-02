@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+/.git
+/.github
+.DS_Store
+.env
+/public/build
