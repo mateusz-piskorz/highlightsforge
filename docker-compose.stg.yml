@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '8000:8000'
+      - '8001:8000'
     environment:
       DB_CONNECTION: pgsql
       DB_HOST: db
@@ -17,6 +17,8 @@ services:
       APP_DEBUG: false
       VITE_APP_NAME: highlightsforge
       APP_NAME: highlightsforge
+    networks:
+      - app_net_stg
 
   queue_worker:
     container_name: queue_worker_stg
@@ -37,6 +39,8 @@ services:
     command: >
       sh -c "php artisan queue:work --sleep=3 --tries=3 --timeout=60"
     restart: unless-stopped
+    networks:
+      - app_net_stg
 
   db:
     image: postgres:17.6
@@ -47,6 +51,11 @@ services:
       POSTGRES_DB: db_stg
       POSTGRES_USER: db_stg_user
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - app_net_stg
 
 volumes:
   db-data:
+
+networks:
+  app_net_stg:
