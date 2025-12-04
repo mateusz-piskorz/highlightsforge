@@ -19,6 +19,10 @@ services:
       APP_NAME: highlightsforge
     networks:
       - app_net_stg
+    volumes:
+      - type: bind
+        source: /var/www/html/stg/storage
+        target: /var/www/html/storage/app/public
 
   queue_worker:
     container_name: queue_worker_stg

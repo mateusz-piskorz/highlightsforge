@@ -7,7 +7,6 @@ set -euo pipefail
 # Notes:
 #   - This script only copies from an existing container specified by name.
 #   - It will remove everything inside <host-dest> before copying (DEST is preserved).
-#   - It will skip (preserve) a top-level folder named "storage" inside <host-dest>.
 
 CONTAINER=""
 while getopts ":c:" opt; do
@@ -48,25 +47,9 @@ if [ "${dest_full}" = "/" ]; then
   exit 5
 fi
 
-echo "Removing all contents of ${dest_full}, preserving '${dest_full}/storage' if present ..."
-
-
-
-if ! find "${dest_full}" -mindepth 1 \( -path "${dest_full}/storage" -prune \) -o -exec rm -rf -- {} + 2>/dev/null; then
-  echo "find-based removal failed or returned non-zero; falling back to shell removal (skipping 'storage')..."
-  (
-    shopt -s dotglob nullglob 2>/dev/null || true
-    for entry in "${dest_full%/}/"* "${dest_full%/}/".*; do
-      # skip non-existing globs
-      [ -e "$entry" ] || continue
-      name="$(basename -- "$entry")"
-      # skip '.' and '..' and the storage directory
-      if [ "$name" = "." ] || [ "$name" = ".." ] || [ "$name" = "storage" ]; then
-        continue
-      fi
-      rm -rf -- "$entry" 2>/dev/null || true
-    done
-  )
+echo "Removing all contents of ${dest_full} ..."
+if ! find "${dest_full}" -mindepth 1 -delete 2>/dev/null; then
+  rm -rf "${dest_full:?}/"* "${dest_full:?}/".[!.]* "${dest_full:?}/"..?* 2>/dev/null || true
 fi
 
 copy_if_exists() {
@@ -77,6 +60,7 @@ copy_if_exists() {
     dest_path="${DEST%/}/${dest_subpath}"
   fi
 
+  # Ensure destination parent exists
   mkdir -p "$(dirname "${dest_path}")" 2>/dev/null || true
 
   if docker cp "${CONTAINER}:${src_path}" "${dest_path}" 2>/dev/null; then
