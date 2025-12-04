@@ -46,6 +46,11 @@ FROM dunglas/frankenphp
 
 WORKDIR /var/www/html
 
+RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+
+RUN echo "upload_max_filesize=110M" > $PHP_INI_DIR/conf.d/custom.ini && \
+    echo "post_max_size=110M" >> $PHP_INI_DIR/conf.d/custom.ini
+
 # Install system packages required at runtime
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git \
