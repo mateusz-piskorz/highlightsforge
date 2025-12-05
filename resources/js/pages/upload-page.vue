@@ -41,7 +41,6 @@ const { handleSubmit, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
     const formData = new FormData();
     formData.append('clip', data.file);
     formData.append('description', data.description);

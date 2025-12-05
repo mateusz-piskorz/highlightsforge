@@ -73,6 +73,8 @@ jobs:
     runs-on: self-hosted
     env:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
 
     defaults:
       run:
