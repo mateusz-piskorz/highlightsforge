@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ClipRequest;
+use App\Mail\SendSomething;
+use Illuminate\Support\Facades\Mail;
 
 class ClipController extends Controller
 {
@@ -28,4 +30,16 @@ class ClipController extends Controller
             'message' => 'clip stored successfully'
         ], 201);
     }
+
+    public function sendSomething()
+    {
+        Mail::to("owcaofficial@yahoo.com")
+            ->queue(new SendSomething());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'sent successfully'
+        ], 200);
+    }
+
 }
