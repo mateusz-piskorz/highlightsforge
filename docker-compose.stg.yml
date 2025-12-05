@@ -17,6 +17,11 @@ services:
       APP_DEBUG: false
       VITE_APP_NAME: highlightsforge
       APP_NAME: highlightsforge
+      MAIL_MAILER: smtp
+      MAIL_HOST: postal.quickpaper.online
+      MAIL_PORT: 25
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     networks:
       - app_net_stg
     volumes:
@@ -40,6 +45,11 @@ services:
       APP_DEBUG: false
       VITE_APP_NAME: highlightsforge
       APP_NAME: highlightsforge
+      MAIL_MAILER: smtp
+      MAIL_HOST: postal.quickpaper.online
+      MAIL_PORT: 25
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
     command: >
       sh -c "php artisan queue:work --sleep=3 --tries=3 --timeout=60"
     restart: unless-stopped

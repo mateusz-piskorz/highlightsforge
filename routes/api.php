@@ -10,3 +10,4 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/clip', [ClipController::class, 'index'])->name('clip-index');
 Route::post('/clip', [ClipController::class, 'store'])->name('clip-store');
+Route::post('/sendSomething', [ClipController::class, 'sendSomething'])->name('sendSomething');
