@@ -7,6 +7,8 @@ services:
     ports:
       - '8000:8000'
     environment:
+      APP_URL: https://www.highlightsforge.space
+      ASSET_URL: https://www.highlightsforge.space
       DB_CONNECTION: pgsql
       DB_HOST: db
       DB_PORT: 5432
@@ -35,6 +37,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      APP_URL: https://www.highlightsforge.space
+      ASSET_URL: https://www.highlightsforge.space
       DB_CONNECTION: pgsql
       DB_HOST: db
       DB_PORT: 5432
@@ -60,7 +64,7 @@ services:
     image: postgres:17.6
     container_name: db_prod
     volumes:
-      - db-data:/postgresql
+      - db_data_prod:/postgresql
     environment:
       POSTGRES_DB: db_prod
       POSTGRES_USER: db_prod_user
@@ -69,7 +73,7 @@ services:
       - app_prod_stg
 
 volumes:
-  db-data:
+  db_data_prod:
 
 networks:
   app_prod_stg:

@@ -28,12 +28,11 @@ export type AppPageProps<
 
 export interface User {
     id: number;
-    name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
+    user_name: string;
+    email: string | null;
     created_at: string;
     updated_at: string;
+    two_factor_confirmed_at: string | null;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
