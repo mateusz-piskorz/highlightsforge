@@ -12,9 +12,7 @@ use Inertia\Response;
 
 class ProfileController
 {
-    /**
-     * Show the user's profile settings page.
-     */
+
     public function edit(Request $request): Response
     {
         return Inertia::render('settings/Profile', [
@@ -23,9 +21,6 @@ class ProfileController
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->user()->fill($request->validated());

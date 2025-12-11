@@ -10,8 +10,7 @@ class ProcessClipOld implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(private UploadedFile $clip)
-    {}
+    public function __construct(private UploadedFile $clip) {}
 
     public function handle(): void
     {

@@ -19,7 +19,7 @@ class TwoFactorAuthenticationController implements HasMiddleware
     {
         return Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
             ? [new Middleware('password.confirm', only : ['show'])]
-            :[];
+            : [];
     }
 
     /**
@@ -30,8 +30,8 @@ class TwoFactorAuthenticationController implements HasMiddleware
         $request->ensureStateIsValid();
 
         return Inertia::render('settings/TwoFactor', [
-            'twoFactorEnabled'     => $request->user()->hasEnabledTwoFactorAuthentication(),
-            'requiresConfirmation' => Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm')
+            'twoFactorEnabled' => $request->user()->hasEnabledTwoFactorAuthentication(),
+            'requiresConfirmation' => Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm'),
         ]);
     }
 }

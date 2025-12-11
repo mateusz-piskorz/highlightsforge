@@ -13,7 +13,6 @@ use Illuminate\Support\Str;
 
 class ProfileController
 {
-
     public function updateProfile(Request $request)
     {
         $validated = $request->validate(['user_name' => 'required|string|min:3|max:250']);
@@ -21,7 +20,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated successfully'
+            'message' => 'Profile updated successfully',
         ]);
 
     }
@@ -31,33 +30,33 @@ class ProfileController
         $user_name = $request->validate(['user_name' => 'required|string|min:3|max:255'])['user_name'];
         $user = User::create(['user_name' => $user_name]);
 
-        if (!Auth::loginUsingId($user->id, true)) {
+        if (! Auth::loginUsingId($user->id, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect'
+                'message' => 'The provided credentials are incorrect',
             ]);
         }
         $request->session()->regenerate();
 
         return response()->json([
             'message' => 'singed in successfully',
-            'user'    => $request->user()->only(['id', 'name', 'email'])
+            'user' => $request->user()->only(['id', 'name', 'email']),
         ]);
     }
 
     public function loginStep1(Request $request)
     {
         $email = $request->validate(['email' => 'required|email|max:250'])['email'];
-        $user = User::where("email", $email)->first();
-        if (!$user) {
+        $user = User::where('email', $email)->first();
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'incorrect E-mail'
+                'message' => 'incorrect E-mail',
             ]);
         }
 
         $code = Str::random(6);
-        $codeRecord = $user->emailVerifyCodes->firstWhere("email", $email);
+        $codeRecord = $user->emailVerifyCodes->firstWhere('email', $email);
         if ($codeRecord) {
             $codeRecord->code = $code;
             $codeRecord->save();
@@ -69,7 +68,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'verify code send successfully'
+            'message' => 'verify code send successfully',
         ]);
     }
 
@@ -77,19 +76,19 @@ class ProfileController
     {
         $validated = $request->validate(['code' => 'required|array|size:6']);
         $code = implode($validated['code']);
-        $codeRecord = EmailVerifyCode::query()->where("code", $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
+        $codeRecord = EmailVerifyCode::query()->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
 
-        if (!$codeRecord) {
+        if (! $codeRecord) {
             return response()->json([
                 'success' => false,
-                'message' => 'verify code invalid'
+                'message' => 'verify code invalid',
             ]);
         }
 
-        if (!Auth::loginUsingId($codeRecord->user_id, true)) {
+        if (! Auth::loginUsingId($codeRecord->user_id, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect'
+                'message' => 'The provided credentials are incorrect',
             ]);
 
         }
@@ -98,7 +97,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged in successfully'
+            'message' => 'Logged in successfully',
         ]);
     }
 
@@ -106,7 +105,7 @@ class ProfileController
     {
         $email = $request->validate(['email' => 'required|email|max:250|unique:users,email'])['email'];
         $code = Str::random(6);
-        $codeRecord = $request->user()->emailVerifyCodes->firstWhere("email", $email);
+        $codeRecord = $request->user()->emailVerifyCodes->firstWhere('email', $email);
         if ($codeRecord) {
             $codeRecord->code = $code;
             $codeRecord->save();
@@ -118,7 +117,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'verify code send successfully'
+            'message' => 'verify code send successfully',
         ]);
     }
 
@@ -126,12 +125,12 @@ class ProfileController
     {
         $validated = $request->validate(['code' => 'required|array|size:6']);
         $code = implode($validated['code']);
-        $codeRecord = $request->user()->emailVerifyCodes->where("code", $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
+        $codeRecord = $request->user()->emailVerifyCodes->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
 
-        if (!$codeRecord) {
+        if (! $codeRecord) {
             return response()->json([
                 'success' => false,
-                'message' => 'verify code invalid'
+                'message' => 'verify code invalid',
             ]);
         }
 
@@ -140,9 +139,8 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Email verified successfully'
+            'message' => 'Email verified successfully',
         ]);
 
     }
-
 }

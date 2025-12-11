@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmailVerifyCode extends Model
 {
-
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
         'email',
         'user_id',
-        'code'
+        'code',
     ];
 
     public function user(): BelongsTo

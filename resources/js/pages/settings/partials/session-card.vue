@@ -1,30 +1,28 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/ui/card';
-import { Session } from '@/lib/utils';
+// import { Session } from '@/lib/utils';
 import { usePage } from '@inertiajs/vue3';
-import { Monitor, Smartphone } from 'lucide-vue-next';
-import { UAParser } from 'ua-parser-js';
-const {
-    id,
-    ip_address,
-    last_activity,
-    message,
-    payload,
-    success,
-    user_agent,
-    user_id,
-} = defineProps<Session>();
+// const {
+//     id,
+//     ip_address,
+//     last_activity,
+//     message,
+//     payload,
+//     success,
+//     user_agent,
+//     user_id,
+// } = defineProps<Session>();
 
 const { auth } = usePage().props;
 console.log(auth);
 
-const useragent = new UAParser(user_agent).getResult();
-const isMobileDevice = ['mobile', 'tablet'].includes(
-    useragent.device.type || '',
-);
-const deviceName = isMobileDevice
-    ? useragent.device.model
-    : useragent.browser.name;
+// const useragent = new UAParser(user_agent).getResult();
+// const isMobileDevice = ['mobile', 'tablet'].includes(
+//     useragent.device.type || '',
+// );
+// const deviceName = isMobileDevice
+//     ? useragent.device.model
+//     : useragent.browser.name;
 </script>
 
 <template>
@@ -39,10 +37,10 @@ const deviceName = isMobileDevice
                         className="flex h-3 w-3 rounded-full bg-green-500"
                     /> -->
 
-                    <Smartphone v-if="isMobileDevice" />
-                    <Monitor v-else />
+                    <!-- <Smartphone v-if="isMobileDevice" /> -->
+                    <!-- <Monitor v-else /> -->
 
-                    {{ deviceName }}, {{ useragent.os.name }}
+                    <!-- {{ deviceName }}, {{ useragent.os.name }} -->
 
                     <!-- <p v-if="isCurrentSession" className="text-muted-foreground">(current session)</p> -->
                 </div>
