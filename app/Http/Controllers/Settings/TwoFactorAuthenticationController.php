@@ -10,7 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
 
-class TwoFactorAuthenticationController extends Controller implements HasMiddleware
+class TwoFactorAuthenticationController implements HasMiddleware
 {
     /**
      * Get the middleware that should be assigned to the controller.
@@ -18,7 +18,7 @@ class TwoFactorAuthenticationController extends Controller implements HasMiddlew
     public static function middleware(): array
     {
         return Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword')
-            ? [new Middleware('password.confirm', only: ['show'])]
+            ? [new Middleware('password.confirm', only : ['show'])]
             : [];
     }
 
