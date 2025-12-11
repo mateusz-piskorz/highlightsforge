@@ -3,18 +3,13 @@ services:
     image: postgres:17.6
     container_name: db_dev
     volumes:
-      - db-data:/postgresql
+      - db_data_dev:/postgresql
     environment:
       POSTGRES_DB: '${DB_DATABASE}'
       POSTGRES_USER: '${DB_USERNAME}'
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
     ports:
       - '5432:5432'
-    networks:
-      - app_dev_stg
 
 volumes:
-  db-data:
-
-networks:
-  app_dev_stg:
+  db_data_dev:

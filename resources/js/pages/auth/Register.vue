@@ -1,14 +1,33 @@
 <script setup lang="ts">
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthBase from '@/layouts/AuthLayout.vue';
+
 import { login } from '@/routes';
-import { store } from '@/routes/register';
-import { Form, Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { toTypedSchema } from '@vee-validate/zod';
+import axios from 'axios';
+import { useForm, Field as VeeField } from 'vee-validate';
+import { z } from 'zod';
+
+const { handleSubmit } = useForm({
+    validationSchema: toTypedSchema(
+        z.object({
+            user_name: z
+                .string()
+                .min(3, 'Username must be at least 3 characters.')
+                .max(50, 'Username must be at most 50 characters.'),
+        }),
+    ),
+});
+
+const onSubmit = handleSubmit(async ({ user_name }) => {
+    await axios.post('/api/registerViaUsername', {
+        user_name,
+    });
+
+    router.visit('/settings');
+});
 </script>
 
 <template>
@@ -18,91 +37,32 @@ import { Form, Head } from '@inertiajs/vue3';
     >
         <Head title="Register" />
 
-        <Form
-            v-bind="store.form()"
-            :reset-on-success="['password', 'password_confirmation']"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6"
-        >
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="name">Name</Label>
+        <form id="form-vee-demo" @submit="onSubmit">
+            <VeeField v-slot="{ field, errorMessage }" name="user_name">
+                <Field :data-invalid="!!errorMessage">
+                    <FieldLabel for="form-vee-demo-file">Username</FieldLabel>
                     <Input
-                        id="name"
-                        type="text"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="name"
-                        name="name"
-                        placeholder="Full name"
+                        id="form-vee-demo-file"
+                        autocomplete="off"
+                        :aria-invalid="!!errorMessage"
+                        @change="field.onChange"
                     />
-                    <InputError :message="errors.name" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        required
-                        :tabindex="2"
-                        autocomplete="email"
-                        name="email"
-                        placeholder="email@example.com"
+                    <FieldError
+                        v-if="errorMessage"
+                        :errors="[{ message: errorMessage }]"
                     />
-                    <InputError :message="errors.email" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        required
-                        :tabindex="3"
-                        autocomplete="new-password"
-                        name="password"
-                        placeholder="Password"
-                    />
-                    <InputError :message="errors.password" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        required
-                        :tabindex="4"
-                        autocomplete="new-password"
-                        name="password_confirmation"
-                        placeholder="Confirm password"
-                    />
-                    <InputError :message="errors.password_confirmation" />
-                </div>
-
-                <Button
-                    type="submit"
-                    class="mt-2 w-full"
-                    tabindex="5"
-                    :disabled="processing"
-                    data-test="register-user-button"
-                >
-                    <Spinner v-if="processing" />
-                    Create account
-                </Button>
-            </div>
-
-            <div class="text-center text-sm text-muted-foreground">
-                Already have an account?
-                <TextLink
-                    :href="login()"
-                    class="underline underline-offset-4"
-                    :tabindex="6"
-                    >Log in</TextLink
-                >
-            </div>
-        </Form>
+                </Field>
+            </VeeField>
+            <Button type="submit">Dwa</Button>
+        </form>
+        <div class="text-center text-sm text-muted-foreground">
+            Already have an account?
+            <TextLink
+                :href="login()"
+                class="underline underline-offset-4"
+                :tabindex="6"
+                >Log in</TextLink
+            >
+        </div>
     </AuthBase>
 </template>

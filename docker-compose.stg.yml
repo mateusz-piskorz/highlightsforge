@@ -60,7 +60,7 @@ services:
     image: postgres:17.6
     container_name: db_stg
     volumes:
-      - db-data:/postgresql
+      - db_data_stg:/postgresql
     environment:
       POSTGRES_DB: db_stg
       POSTGRES_USER: db_stg_user
@@ -69,7 +69,7 @@ services:
       - app_net_stg
 
 volumes:
-  db-data:
+  db_data_stg:
 
 networks:
   app_net_stg:

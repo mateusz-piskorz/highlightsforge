@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ClipRequest;
 use App\Mail\SendSomething;
 use Illuminate\Support\Facades\Mail;
 
-class ClipController extends Controller
+class ClipController
 {
 
     public function index()

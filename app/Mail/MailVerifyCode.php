@@ -8,24 +8,25 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendSomething extends Mailable
+class MailVerifyCode extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct()
+    public function __construct(public String $code)
     {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Something',
+            subject: 'Login Verification Required for Your Highlights Forge Account',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.mail-md',
+            markdown: 'mail.verify-code',
+            with: ['code' => $this->code],
         );
     }
 
