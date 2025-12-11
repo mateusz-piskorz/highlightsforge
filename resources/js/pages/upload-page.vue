@@ -26,22 +26,19 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { z } from 'zod';
 
-const formSchema = toTypedSchema(
-    z.object({
-        description: z
-            .string()
-            .min(5, 'Description must be at least 20 characters.')
-            .max(100, 'Description must be at most 100 characters.'),
-        file: z.any(),
-    }),
-);
-
 const { handleSubmit, resetForm } = useForm({
-    validationSchema: formSchema,
+    validationSchema: toTypedSchema(
+        z.object({
+            description: z
+                .string()
+                .min(5, 'Description must be at least 20 characters.')
+                .max(100, 'Description must be at most 100 characters.'),
+            file: z.any(),
+        }),
+    ),
 });
 
 const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
     const formData = new FormData();
     formData.append('clip', data.file);
     formData.append('description', data.description);

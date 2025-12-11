@@ -12,7 +12,7 @@ return [
     | the message. All additional mailers can be configured within the
     | "mailers" array. Examples of each type of mailer are provided.
     |
-    */
+     */
 
     'default' => env('MAIL_MAILER', 'log'),
 
@@ -33,7 +33,7 @@ return [
     |            "postmark", "resend", "log", "array",
     |            "failover", "roundrobin"
     |
-    */
+     */
 
     'mailers' => [
 
@@ -63,6 +63,7 @@ return [
 
         'resend' => [
             'transport' => 'resend',
+            'key' => env('RESEND_KEY'),
         ],
 
         'sendmail' => [
@@ -108,7 +109,7 @@ return [
     | the same address. Here you may specify a name and address that is
     | used globally for all emails that are sent by your application.
     |
-    */
+     */
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),

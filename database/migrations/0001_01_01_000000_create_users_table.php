@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('user_name');
+            $table->string('email')->unique()->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -25,6 +23,14 @@ return new class extends Migration
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('email_verify_codes', function (Blueprint $table) {
+            $table->id();
+            $table->string('email');
+            $table->foreignId('user_id')->constrained()->nullOnDelete();
+            $table->string('code');
+            $table->timestampsTz();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
