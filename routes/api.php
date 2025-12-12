@@ -7,16 +7,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return response()->json([
-        'user' => $request->user(),
-        'session' => $request->session(),
+        'user'    => $request->user(),
+        'session' => $request->session()
     ]);
 })->middleware('auth:sanctum');
 
-Route::get('/user-sessions', fn (Request $request) => $request->user()->sessions)->middleware('auth:sanctum');
+Route::get('/user-sessions', function (Request $request) {
+    return $request->user()->sessions;
+})->middleware('auth:sanctum');
 
-Route::get('/clip', [ClipController::class, 'index'])->name('clip-index');
-Route::post('/clip', [ClipController::class, 'store'])->name('clip-store');
-Route::post('/sendSomething', [ClipController::class, 'sendSomething'])->name('sendSomething');
+// clips
+Route::get('/clip', [ClipController::class, 'index']);
+Route::post('/clip', [ClipController::class, 'store']);
+Route::post('/sendSomething', [ClipController::class, 'sendSomething']);
 
 // profile & auth
 Route::post('/register', [ProfileController::class, 'register']);

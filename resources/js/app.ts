@@ -8,7 +8,7 @@ import { createApp, h } from 'vue';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import '../css/app.css';
-import { initializeTheme } from './composables/useAppearance';
+import { initializeTheme } from './lib/composables/useAppearance';
 
 const pinia = createPinia();
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';

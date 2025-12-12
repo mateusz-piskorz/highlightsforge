@@ -8,49 +8,37 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import {
-    Field,
-    FieldDescription,
-    FieldError,
-    FieldGroup,
-    FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    InputGroupTextarea,
-} from '@/components/ui/input-group';
-import { toTypedSchema } from '@vee-validate/zod';
-import { useForm, Field as VeeField } from 'vee-validate';
-import { z } from 'zod';
+// import { Field } from '@/components/ui/field';
 
-const { handleSubmit, resetForm } = useForm({
-    validationSchema: toTypedSchema(
-        z.object({
-            description: z
-                .string()
-                .min(5, 'Description must be at least 20 characters.')
-                .max(100, 'Description must be at most 100 characters.'),
-            file: z.any(),
-        }),
-    ),
-});
+// import { toTypedSchema } from '@vee-validate/zod';
+// import { useForm, Field as VeeField } from 'vee-validate';
+// import { z } from 'zod';
 
-const onSubmit = handleSubmit(async (data) => {
-    const formData = new FormData();
-    formData.append('clip', data.file);
-    formData.append('description', data.description);
+// const { handleSubmit, resetForm } = useForm({
+//     validationSchema: toTypedSchema(
+//         z.object({
+//             description: z
+//                 .string()
+//                 .min(5, 'Description must be at least 20 characters.')
+//                 .max(100, 'Description must be at most 100 characters.'),
+//             file: z.any(),
+//         }),
+//     ),
+// });
 
-    const res = await fetch('/api/clip', {
-        method: 'POST',
-        body: formData,
-        credentials: 'same-origin',
-    });
+// const onSubmit = handleSubmit(async (data) => {
+//     const formData = new FormData();
+//     formData.append('clip', data.file);
+//     formData.append('description', data.description);
 
-    console.log(res);
-});
+//     const res = await fetch('/api/clip', {
+//         method: 'POST',
+//         body: formData,
+//         credentials: 'same-origin',
+//     });
+
+//     console.log(res);
+// });
 </script>
 
 <template>
@@ -62,6 +50,8 @@ const onSubmit = handleSubmit(async (data) => {
             </CardDescription>
         </CardHeader>
         <CardContent>
+            <!--             
+ 
             <form id="form-vee-demo" @submit="onSubmit">
                 <FieldGroup>
                     <VeeField v-slot="{ field, errors }" name="description">
@@ -118,12 +108,14 @@ const onSubmit = handleSubmit(async (data) => {
                     </VeeField>
                 </FieldGroup>
             </form>
+
+        -->
         </CardContent>
         <CardFooter>
             <Field orientation="horizontal">
-                <Button type="button" variant="outline" @click="resetForm">
+                <!-- <Button type="button" variant="outline" @click="resetForm">
                     Reset
-                </Button>
+                </Button> -->
                 <Button type="submit" form="form-vee-demo">Submit</Button>
             </Field>
         </CardFooter>
