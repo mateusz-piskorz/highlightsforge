@@ -2,19 +2,7 @@
 
 use App\Http\Controllers\Api\ClipController;
 use App\Http\Controllers\Api\ProfileController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return response()->json([
-        'user'    => $request->user(),
-        'session' => $request->session()
-    ]);
-})->middleware('auth:sanctum');
-
-Route::get('/user-sessions', function (Request $request) {
-    return $request->user()->sessions;
-})->middleware('auth:sanctum');
 
 // clips
 Route::get('/clip', [ClipController::class, 'index']);
