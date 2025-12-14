@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProfileController
@@ -20,7 +21,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated successfully',
+            'message' => 'Profile updated successfully'
         ]);
 
     }
@@ -30,17 +31,45 @@ class ProfileController
         $user_name = $request->validate(['user_name' => 'required|string|min:3|max:255'])['user_name'];
         $user = User::create(['user_name' => $user_name]);
 
-        if (! Auth::loginUsingId($user->id, true)) {
+        if (!Auth::loginUsingId($user->id, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect',
+                'message' => 'The provided credentials are incorrect'
             ]);
         }
         $request->session()->regenerate();
 
         return response()->json([
             'message' => 'singed in successfully',
-            'user' => $request->user()->only(['id', 'name', 'email']),
+            'user'    => $request->user()->only(['id', 'name', 'email'])
+        ]);
+    }
+
+    public function uploadAvatar(Request $request)
+    {
+
+        $file = $request->file('avatar');
+        $path = $file->store('avatars', 'public');
+
+        $request->user()->avatar = "storage/$path";
+        $request->user()->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar updated successfully'
+        ]);
+    }
+
+    public function removeAvatar(Request $request)
+    {
+        Storage::delete($request->user()->avatar);
+
+        $request->user()->avatar = null;
+        $request->user()->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar removed successfully'
         ]);
     }
 
@@ -48,10 +77,10 @@ class ProfileController
     {
         $email = $request->validate(['email' => 'required|email|max:250'])['email'];
         $user = User::where('email', $email)->first();
-        if (! $user) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'incorrect E-mail',
+                'message' => 'incorrect E-mail'
             ]);
         }
 
@@ -68,7 +97,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'verify code send successfully',
+            'message' => 'verify code send successfully'
         ]);
     }
 
@@ -78,17 +107,17 @@ class ProfileController
         $code = implode($validated['code']);
         $codeRecord = EmailVerifyCode::query()->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
 
-        if (! $codeRecord) {
+        if (!$codeRecord) {
             return response()->json([
                 'success' => false,
-                'message' => 'verify code invalid',
+                'message' => 'verify code invalid'
             ]);
         }
 
-        if (! Auth::loginUsingId($codeRecord->user_id, true)) {
+        if (!Auth::loginUsingId($codeRecord->user_id, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect',
+                'message' => 'The provided credentials are incorrect'
             ]);
 
         }
@@ -97,7 +126,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged in successfully',
+            'message' => 'Logged in successfully'
         ]);
     }
 
@@ -117,7 +146,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'verify code send successfully',
+            'message' => 'verify code send successfully'
         ]);
     }
 
@@ -127,10 +156,10 @@ class ProfileController
         $code = implode($validated['code']);
         $codeRecord = $request->user()->emailVerifyCodes->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
 
-        if (! $codeRecord) {
+        if (!$codeRecord) {
             return response()->json([
                 'success' => false,
-                'message' => 'verify code invalid',
+                'message' => 'verify code invalid'
             ]);
         }
 
@@ -139,7 +168,30 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Email verified successfully',
+            'message' => 'Email verified successfully'
+        ]);
+
+    }
+
+    public function removeEmail(Request $request)
+    {
+        $request->user()->email = null;
+        $request->user()->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Email removed successfully'
+        ]);
+
+    }
+
+    public function removeAccount(Request $request)
+    {
+        $request->user()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account removed successfully'
         ]);
 
     }

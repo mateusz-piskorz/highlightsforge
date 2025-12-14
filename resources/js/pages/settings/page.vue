@@ -4,6 +4,8 @@ import AppLayout from '@/layouts/app-layout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import ActiveSessionsSection from './partials/active-sessions-section.vue';
 import AppearanceSection from './partials/appearance-section.vue';
+import AvatarSection from './partials/avatar-section.vue';
+import DeleteAccountSection from './partials/delete-account-section.vue';
 import ProfileSection from './partials/profile-section.vue';
 
 const { user } = usePage().props.auth;
@@ -18,8 +20,12 @@ const { user } = usePage().props.auth;
                 <Separator />
                 <ProfileSection />
                 <Separator />
+                <AvatarSection />
+                <Separator />
                 <ActiveSessionsSection />
+                <Separator />
                 <!-- <SettingsEmailSection /> -->
+                <DeleteAccountSection />
             </template>
             <h1 class="px-4 text-2xl text-destructive" v-else>Unauthorized</h1>
         </div>

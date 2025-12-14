@@ -15,7 +15,7 @@ console.log(data);
 </script>
 
 <template>
-    <div class="flex flex-col space-y-6 sm:px-6 md:px-8 lg:px-10">
+    <div class="flex flex-col space-y-6 px-5 sm:px-6 md:px-8 lg:px-10">
         {{ data }}
         <!-- <div v-for="session in data" :key="session.id">
             {{ session }}

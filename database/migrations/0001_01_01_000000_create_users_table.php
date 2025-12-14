@@ -14,6 +14,7 @@ return new class() extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('user_name');
+            $table->string('avatar')->nullable();
             $table->string('email')->unique()->nullable();
             $table->rememberToken();
             $table->timestamps();
@@ -22,7 +23,7 @@ return new class() extends Migration
         Schema::create('email_verify_codes', function (Blueprint $table) {
             $table->id();
             $table->string('email');
-            $table->foreignId('user_id')->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('code');
             $table->timestampsTz();
         });
