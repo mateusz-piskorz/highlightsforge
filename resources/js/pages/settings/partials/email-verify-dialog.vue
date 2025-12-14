@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { InputField } from '@/components/fields/input-field';
-import InputError from '@/components/InputError.vue';
+import InputError from '@/components/input-error.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { PinInput, PinInputSlot } from '@/components/ui/pin-input';
 import { onSubmitEmail, onSubmitVerifyCode } from '@/lib/verify-email';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const { open, setOpen } = defineProps<{
@@ -40,8 +40,10 @@ const verifyCodeForm = useForm({ code: [] });
                         onSubmitEmail({
                             action: 'verify',
                             form: emailForm,
+                            onSuccess: () => {
+                                scene = 'verify_code';
+                            },
                         });
-                        scene = 'verify_code';
                     }
                 "
                 class="space-y-6"
@@ -68,13 +70,16 @@ const verifyCodeForm = useForm({ code: [] });
             <form
                 v-else
                 @submit.prevent="
-                    () => {
-                        onSubmitVerifyCode({
+                    async () => {
+                        await onSubmitVerifyCode({
                             action: 'verify',
                             form: verifyCodeForm,
+                            onSuccess: () => {
+                                router.reload();
+                                setOpen(false);
+                                scene = 'email';
+                            },
                         });
-                        setOpen(false);
-                        scene = 'email';
                     }
                 "
                 class="space-y-6"

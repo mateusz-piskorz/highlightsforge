@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Mail\MailVerifyCode;
-use App\Models\EmailVerifyCode;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController
 {
@@ -20,7 +16,7 @@ class ProfileController
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated successfully',
+            'message' => 'Profile updated successfully'
         ]);
 
     }
@@ -30,117 +26,46 @@ class ProfileController
         $user_name = $request->validate(['user_name' => 'required|string|min:3|max:255'])['user_name'];
         $user = User::create(['user_name' => $user_name]);
 
-        if (! Auth::loginUsingId($user->id, true)) {
+        if (!Auth::loginUsingId($user->id, true)) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials are incorrect',
+                'message' => 'The provided credentials are incorrect'
             ]);
         }
         $request->session()->regenerate();
 
         return response()->json([
             'message' => 'singed in successfully',
-            'user' => $request->user()->only(['id', 'name', 'email']),
+            'user'    => $request->user()->only(['id', 'name', 'email'])
         ]);
     }
 
-    public function loginStep1(Request $request)
+    public function uploadAvatar(Request $request)
     {
-        $email = $request->validate(['email' => 'required|email|max:250'])['email'];
-        $user = User::where('email', $email)->first();
-        if (! $user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'incorrect E-mail',
-            ]);
-        }
 
-        $code = Str::random(6);
-        $codeRecord = $user->emailVerifyCodes->firstWhere('email', $email);
-        if ($codeRecord) {
-            $codeRecord->code = $code;
-            $codeRecord->save();
-        } else {
-            EmailVerifyCode::create(['code' => $code, 'email' => $email, 'user_id' => $user->id]);
-        }
+        $file = $request->file('avatar');
+        $path = $file->store('avatars', 'public');
 
-        Mail::to($email)->queue(new MailVerifyCode($code));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'verify code send successfully',
-        ]);
-    }
-
-    public function loginStep2(Request $request)
-    {
-        $validated = $request->validate(['code' => 'required|array|size:6']);
-        $code = implode($validated['code']);
-        $codeRecord = EmailVerifyCode::query()->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
-
-        if (! $codeRecord) {
-            return response()->json([
-                'success' => false,
-                'message' => 'verify code invalid',
-            ]);
-        }
-
-        if (! Auth::loginUsingId($codeRecord->user_id, true)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The provided credentials are incorrect',
-            ]);
-
-        }
-
-        $request->session()->regenerate();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Logged in successfully',
-        ]);
-    }
-
-    public function VerifyEmailStep1(Request $request)
-    {
-        $email = $request->validate(['email' => 'required|email|max:250|unique:users,email'])['email'];
-        $code = Str::random(6);
-        $codeRecord = $request->user()->emailVerifyCodes->firstWhere('email', $email);
-        if ($codeRecord) {
-            $codeRecord->code = $code;
-            $codeRecord->save();
-        } else {
-            EmailVerifyCode::create(['code' => $code, 'email' => $email, 'user_id' => $request->user()->id]);
-        }
-
-        Mail::to($email)->queue(new MailVerifyCode($code));
-
-        return response()->json([
-            'success' => true,
-            'message' => 'verify code send successfully',
-        ]);
-    }
-
-    public function VerifyEmailStep2(Request $request)
-    {
-        $validated = $request->validate(['code' => 'required|array|size:6']);
-        $code = implode($validated['code']);
-        $codeRecord = $request->user()->emailVerifyCodes->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
-
-        if (! $codeRecord) {
-            return response()->json([
-                'success' => false,
-                'message' => 'verify code invalid',
-            ]);
-        }
-
-        $request->user()->email = $codeRecord->email;
+        $request->user()->avatar = "storage/$path";
         $request->user()->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Email verified successfully',
+            'message' => 'Avatar updated successfully'
         ]);
-
     }
+
+    public function removeAvatar(Request $request)
+    {
+        Storage::delete($request->user()->avatar);
+
+        $request->user()->avatar = null;
+        $request->user()->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar removed successfully'
+        ]);
+    }
+
 }
