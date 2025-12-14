@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { InputField } from '@/components/fields/input-field';
-import InputError from '@/components/InputError.vue';
+import InputError from '@/components/input-error.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -40,8 +40,10 @@ const verifyCodeForm = useForm({ code: [] });
                         onSubmitEmail({
                             action: 'login',
                             form: emailForm,
+                            onSuccess: () => {
+                                scene = 'verify_code';
+                            },
                         });
-                        scene = 'verify_code';
                     }
                 "
                 class="space-y-6"
@@ -68,13 +70,15 @@ const verifyCodeForm = useForm({ code: [] });
             <form
                 v-else
                 @submit.prevent="
-                    () => {
-                        onSubmitVerifyCode({
+                    async () => {
+                        await onSubmitVerifyCode({
                             action: 'login',
                             form: verifyCodeForm,
+                            onSuccess: () => {
+                                setOpen(false);
+                                scene = 'email';
+                            },
                         });
-                        setOpen(false);
-                        scene = 'email';
                     }
                 "
                 class="space-y-6"

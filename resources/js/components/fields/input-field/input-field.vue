@@ -1,6 +1,6 @@
 <!-- components/ui/InputField.vue -->
 <script setup lang="ts">
-import InputError from '@/components/InputError.vue';
+import InputError from '@/components/input-error.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { Label } from '@/components/ui/label';
 import { computed, useAttrs } from 'vue';
