@@ -3,8 +3,14 @@ import axios from 'axios';
 import { toast } from 'vue-sonner';
 import { setFormApiErrors } from './set-form-api-errors';
 
-const step1Url = { verify: '/api/verifyEmailStep1', login: '/api/loginStep1' };
-const step2Url = { verify: '/api/verifyEmailStep2', login: '/api/loginStep2' };
+const step1Url = {
+    verify: '/api/verify-email-step-1',
+    login: '/api/login-step-1',
+};
+const step2Url = {
+    verify: '/api/verify-email-step-2',
+    login: '/api/login-step-2',
+};
 const verifyCodeMsg = {
     login: 'logged in successfully',
     verify: 'email verified successfully',
@@ -13,9 +19,10 @@ const verifyCodeMsg = {
 type Args = {
     form: InertiaForm<any>;
     action: 'verify' | 'login';
+    onSuccess?: () => void;
 };
 
-export const onSubmitEmail = async ({ form, action }: Args) => {
+export const onSubmitEmail = async ({ form, action, onSuccess }: Args) => {
     const { data } = await axios.post(step1Url[action], form.data());
 
     if (!data.success) {
@@ -25,9 +32,10 @@ export const onSubmitEmail = async ({ form, action }: Args) => {
     }
 
     toast.success('verify code sent successfully');
+    onSuccess?.();
 };
 
-export const onSubmitVerifyCode = async ({ form, action }: Args) => {
+export const onSubmitVerifyCode = async ({ form, action, onSuccess }: Args) => {
     const { data } = await axios.post(step2Url[action], form.data());
 
     if (!data.success) {
@@ -37,4 +45,5 @@ export const onSubmitVerifyCode = async ({ form, action }: Args) => {
     }
 
     toast.success(verifyCodeMsg[action]);
+    onSuccess?.();
 };

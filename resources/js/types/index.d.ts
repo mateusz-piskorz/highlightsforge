@@ -15,6 +15,7 @@ export interface User {
     id: number;
     user_name: string;
     email: string | null;
+    avatar: string | null;
     created_at: string;
     updated_at: string;
     two_factor_confirmed_at: string | null;
