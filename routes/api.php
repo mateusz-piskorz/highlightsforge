@@ -6,17 +6,16 @@ use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // clips
-Route::get('/clip', [ClipController::class, 'index']);
-Route::post('/clip', [ClipController::class, 'store']);
-Route::post('/sendSomething', [ClipController::class, 'sendSomething']);
+Route::get('/clips', [ClipController::class, 'index']);
+Route::post('/clip', [ClipController::class, 'store'])->middleware(['auth:sanctum']);
 
 // profile
-Route::post('/register', [ProfileController::class, 'register']);
-Route::post('/upload-avatar', [ProfileController::class, 'uploadAvatar']);
-Route::delete('/remove-avatar', [ProfileController::class, 'removeAvatar']);
+Route::post('/upload-avatar', [ProfileController::class, 'uploadAvatar'])->middleware(['auth:sanctum']);
+Route::delete('/remove-avatar', [ProfileController::class, 'removeAvatar'])->middleware(['auth:sanctum']);
 Route::post('/update-profile', [ProfileController::class, 'updateProfile'])->middleware(['auth:sanctum']);
 
 // auth
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login-step-1', [AuthController::class, 'loginStep1']);
 Route::post('/login-step-2', [AuthController::class, 'loginStep2']);
 Route::post('/verify-email-step-1', [AuthController::class, 'VerifyEmailStep1'])->middleware(['auth:sanctum']);

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 const { src, size, name } = defineProps<{
     src: string;
     name: string;
-    size: 'base' | 'lg';
+    size?: 'base' | 'lg';
 }>();
 </script>
 
@@ -14,7 +14,7 @@ const { src, size, name } = defineProps<{
     <Avatar
         :class="
             cn(
-                'h-8 w-8 overflow-hidden rounded-full border',
+                'h-10 w-10 overflow-hidden rounded-full border',
                 size === 'lg' && 'h-40 w-40',
             )
         "
