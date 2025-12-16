@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Api\ClipRequest;
+use App\Models\Clip;
+use Illuminate\Http\Request;
 
 class ClipController
 {
-
-    public function index()
+    public function index(Request $request)
     {
+        $clips = Clip::query()->with('user')->get();
+        // Clip::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'clip_path' => $path]);
         return response()->json([
-            'something' => true
+            'clips' => $clips
         ]);
-
     }
 
-    public function store(ClipRequest $request)
+    public function store(Request $request)
     {
-
+        $validated = $request->validate(['clip' => 'required|file|max:102400|mimetypes:video/mp4,video/webm', 'title' => 'required|string']);
         $file = $request->file('clip');
         $path = $file->store('clips', 'public');
 
+        Clip::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'file_path' => $path, 'file_type' => $file->getMimeType()]);
+
         return response()->json([
-            'path'    => $path,
             'success' => true,
-            'message' => 'clip stored successfully'
-        ], 201);
+            'message' => 'Clip stored successfully'
+        ]);
     }
 }

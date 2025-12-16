@@ -13,6 +13,26 @@ use Illuminate\Support\Str;
 
 class AuthController
 {
+
+    public function register(Request $request)
+    {
+        $user_name = $request->validate(['user_name' => 'required|string|min:3|max:255'])['user_name'];
+        $user = User::create(['user_name' => $user_name]);
+
+        if (!Auth::loginUsingId($user->id, true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The provided credentials are incorrect'
+            ]);
+        }
+        $request->session()->regenerate();
+
+        return response()->json([
+            'message' => 'singed in successfully',
+            'user'    => $request->user()->only(['id', 'name', 'email'])
+        ]);
+    }
+
     public function loginStep1(Request $request)
     {
         $email = $request->validate(['email' => 'required|email|max:250'])['email'];

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController
@@ -19,25 +18,6 @@ class ProfileController
             'message' => 'Profile updated successfully'
         ]);
 
-    }
-
-    public function register(Request $request)
-    {
-        $user_name = $request->validate(['user_name' => 'required|string|min:3|max:255'])['user_name'];
-        $user = User::create(['user_name' => $user_name]);
-
-        if (!Auth::loginUsingId($user->id, true)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The provided credentials are incorrect'
-            ]);
-        }
-        $request->session()->regenerate();
-
-        return response()->json([
-            'message' => 'singed in successfully',
-            'user'    => $request->user()->only(['id', 'name', 'email'])
-        ]);
     }
 
     public function uploadAvatar(Request $request)
