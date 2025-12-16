@@ -16,13 +16,13 @@ class User extends Authenticatable
         'email'
     ];
 
-    public function sessions(): HasMany
-    {
-        return $this->hasMany(Session::class);
-    }
-
     public function emailVerifyCodes(): HasMany
     {
         return $this->hasMany(EmailVerifyCode::class);
+    }
+
+    public function clips(): HasMany
+    {
+        return $this->hasMany(Clip::class);
     }
 }

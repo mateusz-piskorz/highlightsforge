@@ -1,5 +1,5 @@
 <template>
-    <main class="mx-auto max-w-[1440px] border py-12">
+    <main class="mx-auto max-w-7xl border py-12">
         <slot />
     </main>
 </template>
