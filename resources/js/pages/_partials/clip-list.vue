@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import UserAvatar from '@/components/user-avatar.vue';
 import { useQuery } from '@tanstack/vue-query';
@@ -14,16 +15,15 @@ const { data } = useQuery({
 
 <template>
     <div class="space-y-20 px-0 sm:px-6 md:px-8 lg:px-0">
-        <!-- {{ data?.clips }} -->
         <Card
             v-for="clip in data?.clips"
             :key="clip.id"
-            class="mx-auto flex max-w-[889px] min-w-[310px] flex-col rounded-none pt-0 sm:rounded-xl"
+            class="mx-auto flex max-w-[889px] min-w-[310px] flex-col rounded-none pt-0 sm:rounded-xl lg:min-w-[660px]"
         >
             <video
                 controls
                 loop
-                class="max-h-[500px] min-h-[200px] sm:rounded-t-xl dark:opacity-90"
+                class="max-h-[500px] min-h-[200px] sm:rounded-t-xl lg:min-h-[370px] dark:opacity-90"
             >
                 <source
                     :src="`/storage/${clip.file_path}`"

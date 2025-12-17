@@ -13,9 +13,10 @@ import { onSubmitEmail, onSubmitVerifyCode } from '@/lib/verify-email';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const { open, setOpen } = defineProps<{
+const { open, setOpen, registerAction } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
+    registerAction: () => void;
 }>();
 
 const scene = ref<'email' | 'verify_code'>('email');
@@ -112,6 +113,12 @@ const verifyCodeForm = useForm({ code: [] });
                     <Button :disabled="emailForm.processing">Verify</Button>
                 </div>
             </form>
+            <div class="flex items-center">
+                <p>don't have an account?</p>
+                <Button type="button" @click="registerAction" variant="link"
+                    >Register Now</Button
+                >
+            </div>
         </DialogContent>
     </Dialog>
 </template>

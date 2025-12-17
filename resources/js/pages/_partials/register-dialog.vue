@@ -12,9 +12,10 @@ import { router, useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import { toast } from 'vue-sonner';
 
-const { open, setOpen } = defineProps<{
+const { open, setOpen, loginAction } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
+    loginAction: () => void;
 }>();
 
 const form = useForm({ user_name: '' });
@@ -60,6 +61,13 @@ const onSubmit = async () => {
                     <Button :disabled="form.processing">Register</Button>
                 </div>
             </form>
+
+            <div class="flex items-center">
+                <p>Already have an account?</p>
+                <Button type="button" @click="loginAction" variant="link"
+                    >Sign up Now</Button
+                >
+            </div>
         </DialogContent>
     </Dialog>
 </template>
