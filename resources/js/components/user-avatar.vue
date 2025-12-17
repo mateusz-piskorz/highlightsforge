@@ -4,7 +4,7 @@ import { getInitials } from '@/lib/composables/useInitials';
 import { cn } from '@/lib/utils';
 
 const { src, size, name } = defineProps<{
-    src: string;
+    src: string | null;
     name: string;
     size?: 'base' | 'lg';
 }>();
@@ -19,7 +19,7 @@ const { src, size, name } = defineProps<{
             )
         "
     >
-        <AvatarImage :src="src" alt="user avatar" />
+        <AvatarImage :src="src || ''" alt="user avatar" />
         <AvatarFallback
             class="rounded-lg bg-sidebar-accent text-black dark:bg-neutral-700 dark:text-white"
         >
