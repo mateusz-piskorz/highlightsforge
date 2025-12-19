@@ -2,12 +2,20 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClipController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // clips
 Route::get('/clips', [ClipController::class, 'index']);
 Route::post('/clip', [ClipController::class, 'store'])->middleware(['auth:sanctum']);
+
+// comments
+Route::get('/comments', [CommentController::class, 'index']);
+Route::post('/comments', [CommentController::class, 'store'])->middleware(['auth:sanctum']);
+Route::put('/comments/{comment}', [CommentController::class, 'update'])->middleware(['auth:sanctum']);
+Route::delete('/comments/{comment}', [CommentController::class, 'delete'])->middleware(['auth:sanctum']);
+Route::post('/comments/{comment}/upvote', [CommentController::class, 'upvote'])->middleware(['auth:sanctum']);
 
 // profile
 Route::post('/upload-avatar', [ProfileController::class, 'uploadAvatar'])->middleware(['auth:sanctum']);

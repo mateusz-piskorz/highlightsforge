@@ -7,13 +7,12 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 
-const { open, setOpen, btnText, description, onContinue, title } = defineProps<{
+const { open, setOpen, btnText, description, title } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
     title: string;
     description: string;
     btnText: string;
-    onContinue: () => void;
 }>();
 </script>
 
@@ -29,7 +28,7 @@ const { open, setOpen, btnText, description, onContinue, title } = defineProps<{
                     variant="secondary"
                     >Cancel</Button
                 >
-                <Button @click="onContinue" variant="destructive">{{
+                <Button @click="$emit('continueEvent')" variant="destructive">{{
                     btnText
                 }}</Button>
             </div>
