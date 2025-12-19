@@ -2,11 +2,12 @@
 import ConfirmDialog from '@/components/confirm-dialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import UserAvatar from '@/components/user-avatar.vue';
+import { useCommentsDialog } from '@/lib/composables/useCommentsDialog';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
 import { PenSquare } from 'lucide-vue-next';
-import { computed, inject, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import CommentActions from './comment-actions.vue';
 import CommentForm from './comment-form.vue';
@@ -27,7 +28,9 @@ const {
     parentId,
     upvoted,
     upvotes_count,
+    showRepliesInit,
 } = defineProps<{
+    showRepliesInit?: boolean;
     id: number;
     upvoted: boolean;
     upvotes_count: number;
@@ -45,14 +48,14 @@ const {
     };
 }>();
 
-const { activeComment, setActiveComment, goBack, clipId } = inject('comments');
+const { activeThread, setActiveThread, clipId, goBack } = useCommentsDialog();
 
 const maxLength = 225;
 
 const editing = ref(false);
 const isExpanded = ref(false);
-const showReplyForm = ref(false);
-const showReplies = ref(false);
+const showReplyForm = ref(showRepliesInit);
+const showReplies = ref(showRepliesInit);
 const confirmOpen = ref(false);
 const upvoteDisabled = ref(false);
 
@@ -161,7 +164,7 @@ const removeHandler = async () => {
             @replyEvent="
                 () => {
                     if (nestLevel >= 2) {
-                        setActiveComment({ id, parentId });
+                        setActiveThread({ id, parentId: parentId || null });
                         return;
                     }
                     if (showReplyForm) {
@@ -176,7 +179,7 @@ const removeHandler = async () => {
                 () => {
                     if (replies_count === 0) return;
                     if (nestLevel >= 2) {
-                        setActiveComment({ id, parentId });
+                        setActiveThread({ id, parentId: parentId || null });
                         return;
                     }
                     showReplies = !showReplies;

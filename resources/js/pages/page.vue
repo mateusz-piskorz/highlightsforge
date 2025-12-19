@@ -15,7 +15,7 @@ const open = ref(false);
     <CommentsDialog
         :open="open"
         :setOpen="(val) => (open = val)"
-        clipId="dwa"
+        :clipId="23"
     />
 
     <AppLayout>
