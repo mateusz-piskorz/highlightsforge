@@ -10,7 +10,6 @@ class ClipController
     public function index(Request $request)
     {
         $clips = Clip::query()->with('user')->get();
-        // Clip::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'clip_path' => $path]);
         return response()->json([
             'clips' => $clips
         ]);
@@ -29,4 +28,5 @@ class ClipController
             'message' => 'Clip stored successfully'
         ]);
     }
+
 }
