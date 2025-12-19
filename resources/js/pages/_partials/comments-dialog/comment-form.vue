@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import TextareaField from '@/components/fields/textarea-field/textarea-field.vue';
 import Button from '@/components/ui/button/Button.vue';
+import { useCommentsDialog } from '@/lib/composables/useCommentsDialog';
 import { setFormApiErrors } from '@/lib/set-form-api-errors';
 import { cn } from '@/lib/utils';
 import { useForm } from '@inertiajs/vue3';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
-import { inject } from 'vue';
 import { toast } from 'vue-sonner';
 
 const queryClient = useQueryClient();
 
-const { clipId } = inject('comments');
+const { clipId } = useCommentsDialog();
 
 const { initContent, parentId, commentId, onCancel, onSuccess, className } =
     defineProps<{

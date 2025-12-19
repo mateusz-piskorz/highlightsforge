@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -6,49 +7,103 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import Separator from '@/components/ui/separator/Separator.vue';
-import { provide, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { useQueryClient } from '@tanstack/vue-query';
+import { ChevronLeft } from 'lucide-vue-next';
+import { computed, provide, ref } from 'vue';
 import CommentForm from './comment-form.vue';
+import Comment from './comment.vue';
 import CommentsList from './comments-list.vue';
+
+const { user } = usePage().props.auth;
+
+const queryClient = useQueryClient();
 
 const { open, setOpen, clipId } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
-    clipId: string;
+    clipId: number;
 }>();
 
-type ActiveComment = { parentId: string | null; id: string };
+type ActiveComment = { parentId: number | null; id: number };
 
-const activeComment = ref<ActiveComment[] | null>(null);
+const activeThread = ref<ActiveComment[] | null>(null);
 
-const setActiveComment = (val: ActiveComment) => {
-    activeComment.value = activeComment.value
-        ? [...activeComment.value, val]
+const setActiveThread = (val: ActiveComment) => {
+    activeThread.value = activeThread.value
+        ? [...activeThread.value, val]
         : [val];
 };
 
 const goBack = () => {
-    activeComment.value = activeComment.value
-        ? activeComment.value?.slice(0, -1)
+    activeThread.value = activeThread.value
+        ? activeThread.value?.slice(0, -1)
         : null;
 };
 
-provide('comments', {
-    activeComment,
-    setActiveComment,
+provide('comments-dialog', {
+    activeThread,
+    setActiveThread,
     goBack,
     clipId,
+});
+
+const activeComment = computed(() => {
+    if (!activeThread.value || activeThread.value?.length === 0) return false;
+    const { parentId, id } = activeThread.value[activeThread.value?.length - 1];
+    const { data } = queryClient.getQueryData([
+        'comments',
+        clipId,
+        parentId,
+    ]) as any;
+
+    return data.find((e: any) => e.id === id);
 });
 </script>
 
 <template>
     <Dialog :open="open" @update:open="setOpen">
         <DialogContent class="space-y-8 px-0">
-            <DialogTitle class="px-5">Comments</DialogTitle>
-            <DialogDescription class="px-5"> description </DialogDescription>
+            <DialogTitle v-if="!activeComment" class="px-5"
+                >Responses (25)</DialogTitle
+            >
+            <div v-if="activeComment" class="flex items-center px-5">
+                <Button
+                    @click="goBack"
+                    variant="ghost"
+                    class="relative mr-2 px-1 pl-0"
+                >
+                    <span class="sr-only">go back</span>
+                    <ChevronLeft class="size-6" />
+                </Button>
+                Replies
+            </div>
+            <DialogDescription v-if="!activeComment" class="px-5">
+                description
+            </DialogDescription>
 
-            <Separator />
-            <CommentForm />
-            <CommentsList />
+            <Separator v-if="!activeComment" />
+            <CommentForm v-if="!activeComment" />
+            <Comment
+                v-if="activeComment"
+                :showRepliesInit="true"
+                :upvoted="activeComment.upvoted"
+                :upvotes_count="activeComment.upvotes_count"
+                :deleted="activeComment.deleted"
+                :parentId="activeComment.parent_id"
+                :nestLevel="0"
+                :key="activeComment.id"
+                :id="activeComment.id"
+                :replies_count="activeComment.replies_count"
+                :content="activeComment.content"
+                :author="{
+                    avatar: activeComment.user.avatar,
+                    name: activeComment.user.user_name,
+                }"
+                :isOwner="user?.id === activeComment.user_id"
+                :updatedAt="activeComment.updated_at"
+            />
+            <CommentsList v-if="!activeComment" />
         </DialogContent>
     </Dialog>
 </template>

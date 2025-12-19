@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useCommentsDialog } from '@/lib/composables/useCommentsDialog';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/vue3';
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
-import { inject } from 'vue';
 import Comment from './comment.vue';
 
 const { user } = usePage().props.auth;
@@ -13,7 +13,7 @@ const { parentId, nestLevel } = defineProps<{
     nestLevel?: number;
 }>();
 
-const { clipId } = inject('comments');
+const { clipId } = useCommentsDialog();
 
 const { data } = useQuery({
     queryKey: ['comments', clipId, parentId],
@@ -29,6 +29,7 @@ const { data } = useQuery({
             :upvoted="comment.upvoted"
             :upvotes_count="comment.upvotes_count"
             :deleted="comment.deleted"
+            :parentId="comment.parent_id"
             :nestLevel="nestLevel || 0"
             :key="comment.id"
             :id="comment.id"
