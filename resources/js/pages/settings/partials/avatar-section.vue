@@ -64,7 +64,7 @@ const deleteAvatar = async () => {
     <ConfirmDialog
         :open="openConfirm"
         :set-open="(val) => (openConfirm = val)"
-        :onContinue="deleteAvatar"
+        @continueEvent="deleteAvatar"
         btn-text="Remove Avatar"
         title="Remove user Avatar"
         description="Do you really want to remove your Avatar? This is a permanent operation and can't be undone."

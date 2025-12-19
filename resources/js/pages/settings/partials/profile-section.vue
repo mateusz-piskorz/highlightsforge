@@ -44,7 +44,7 @@ const onSubmit = async () => {
     <ConfirmDialog
         :open="openConfirm"
         :set-open="(val) => (openConfirm = val)"
-        :onContinue="
+        @continueEvent="
             async () => {
                 const { data } = await axios.delete('/api/remove-email');
 
@@ -121,49 +121,5 @@ const onSubmit = async () => {
 
             <Button :disabled="!form.isDirty">Save</Button>
         </form>
-
-        <!-- 
-        <form id="form-vee-demo" @submit.prevent="onSubmit" class="space-y-8">
-            <VeeField name="user_name" v-slot="{ field, errors }">
-                <Field :data-invalid="!!errors.length">
-                    <FieldLabel for="form-vee-demo-username"
-                        >Username</FieldLabel
-                    >
-
-                    <Input
-                        :default-value="field.value"
-                        v-bind="field"
-                        type="text"
-                        id="form-vee-demo-username"
-                        autocomplete="off"
-                        :aria-invalid="!!errors.length"
-                    />
-
-                    <FieldError
-                        v-if="errors.length"
-                        :errors="errors.map((e) => ({ message: e }))"
-                    />
-                </Field>
-            </VeeField>
-
-            <div>
-                <FieldLabel>E-mail</FieldLabel>
-                <p class="text-muted-foreground">
-                    myemail@spoko.pl -
-                    <span class="text-green-500">verified</span>
-                    <Button
-                        type="button"
-                        @click="
-                            () => {
-                                emailDialogOpen = true;
-                            }
-                        "
-                        >Change</Button
-                    >
-                </p>
-            </div>
-
-            <Button :disabled="!isFieldDirty('user_name')">Save</Button>
-        </form> -->
     </div>
 </template>

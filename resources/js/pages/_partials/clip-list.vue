@@ -44,21 +44,10 @@ const { data } = useQuery({
                 <div
                     class="flex flex-wrap items-center justify-between gap-x-16 gap-y-6"
                 >
-                    <div class="flex items-center gap-4">
-                        <UserAvatar
-                            :name="clip.user.user_name"
-                            :src="clip.user.avatar"
-                        />
-
-                        <div class="grid flex-1 text-left leading-tight">
-                            <span class="truncate font-medium">
-                                {{ clip.user.user_name }}
-                            </span>
-                            <span class="truncate text-sm text-muted-foreground"
-                                >beginner</span
-                            >
-                        </div>
-                    </div>
+                    <UserAvatar
+                        :name="clip.user.user_name"
+                        :src="clip.user.avatar"
+                    />
 
                     <div class="relative flex items-center gap-4">
                         <span class="flex items-center gap-2 text-lg">
