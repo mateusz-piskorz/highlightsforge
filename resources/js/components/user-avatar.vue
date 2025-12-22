@@ -15,18 +15,9 @@ const { src, size, name, youIndicator, commentedAt } = defineProps<{
 
 <template>
     <div class="flex items-center gap-2">
-        <Avatar
-            :class="
-                cn(
-                    'h-9 w-9 overflow-hidden rounded-full border',
-                    size === 'lg' && 'h-40 w-40',
-                )
-            "
-        >
+        <Avatar :class="cn('h-9 w-9 overflow-hidden rounded-full border', size === 'lg' && 'h-40 w-40')">
             <AvatarImage :src="src || ''" alt="user avatar" />
-            <AvatarFallback
-                class="rounded-lg bg-sidebar-accent text-black dark:bg-neutral-700 dark:text-white"
-            >
+            <AvatarFallback class="rounded-lg bg-sidebar-accent text-black dark:bg-neutral-700 dark:text-white">
                 {{ getInitials(name) }}
             </AvatarFallback>
         </Avatar>
@@ -34,13 +25,11 @@ const { src, size, name, youIndicator, commentedAt } = defineProps<{
         <div class="grid flex-1 text-sm leading-tight">
             <span class="truncate font-medium">
                 {{ name }}
-                <span v-if="youIndicator" class="text-muted-foreground">
-                    (you)
-                </span>
+                <span v-if="youIndicator" class="text-muted-foreground"> (you) </span>
             </span>
 
             <time
-                v-if="commentedAt"
+                v-if="Boolean(commentedAt)"
                 class="text-xs text-muted-foreground"
                 title="Commented at"
                 :dateTime="dayjs(commentedAt).format('YYYY-MM-DD')"

@@ -13,10 +13,10 @@ const { parentId, nestLevel } = defineProps<{
     nestLevel?: number;
 }>();
 
-const { clipId } = useCommentsDialog();
+const { postId } = useCommentsDialog();
 
 const { data } = useQuery({
-    queryKey: ['comments', clipId.value, parentId],
+    queryKey: ['comments', postId.value, parentId],
     queryFn: async () => (await axios.get('api/comments', { params: { parentId } })).data,
 });
 </script>

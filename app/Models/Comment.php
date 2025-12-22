@@ -15,7 +15,7 @@ class Comment extends Model
 
     protected $fillable = [
         'user_id',
-        'clip_id',
+        'post_id',
         'parent_id',
         'content',
         'deleted'

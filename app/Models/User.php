@@ -25,8 +25,8 @@ class User extends Authenticatable
         return $this->hasMany(EmailVerifyCode::class);
     }
 
-    public function clips(): HasMany
+    public function posts(): HasMany
     {
-        return $this->hasMany(Clip::class);
+        return $this->hasMany(Post::class);
     }
 }

@@ -35,7 +35,7 @@ const { className, id, author, content, deleted, isOwner, updatedAt, replies_cou
         };
     }>();
 
-const { setActiveThread, clipId } = useCommentsDialog();
+const { setActiveThread, postId } = useCommentsDialog();
 
 const maxLength = 225;
 
@@ -115,7 +115,7 @@ const removeHandler = async () => {
                     }
 
                     await queryClient.refetchQueries({
-                        queryKey: ['comments', clipId, parentId],
+                        queryKey: ['comments', postId, parentId],
                     });
 
                     toast.success(data.message);

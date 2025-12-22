@@ -13,10 +13,10 @@ const { user } = usePage().props.auth;
 
 const queryClient = useQueryClient();
 
-const { clipId, open, setOpen, totalResponses } = defineProps<{
+const { postId, open, setOpen, totalResponses } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
-    clipId: number;
+    postId: number;
     totalResponses: number;
 }>();
 
@@ -36,13 +36,13 @@ provide('comments-dialog', {
     activeThread,
     setActiveThread,
     goBack,
-    clipId: computed(() => clipId),
+    postId: computed(() => postId),
 });
 
 const activeComment = computed(() => {
     if (!activeThread.value || activeThread.value?.length === 0) return false;
     const { parentId, id } = activeThread.value[activeThread.value?.length - 1];
-    const { data } = queryClient.getQueryData(['comments', clipId, parentId]) as any;
+    const { data } = queryClient.getQueryData(['comments', postId, parentId]) as any;
 
     return data.find((e: any) => e.id === id);
 });
