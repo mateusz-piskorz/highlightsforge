@@ -7,10 +7,9 @@ use Illuminate\Http\Request;
 
 class ClipController
 {
-    public function index(Request $request)
+    public function index()
     {
-        $clips = Clip::query()->with('user')->get();
-        // Clip::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'clip_path' => $path]);
+        $clips = Clip::query()->with('user')->withCount('comments')->get();
         return response()->json([
             'clips' => $clips
         ]);
@@ -29,4 +28,5 @@ class ClipController
             'message' => 'Clip stored successfully'
         ]);
     }
+
 }

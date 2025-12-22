@@ -24,7 +24,7 @@ const deleteHandler = async () => {
     <ConfirmDialog
         :open="openConfirm"
         :set-open="(val) => (openConfirm = val)"
-        :onContinue="deleteHandler"
+        @continueEvent="deleteHandler"
         btn-text="Remove Account"
         title="Remove user account"
         description="Do you really want to remove your Account? This is a permanent operation and can't be undone. All your resources will be lost"

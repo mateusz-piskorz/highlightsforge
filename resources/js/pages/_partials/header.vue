@@ -81,18 +81,7 @@ const open = ref<null | 'register' | 'login' | 'clip'>(null);
             <span>upload new clip</span></Button
         >
 
-        <div v-if="user" class="flex items-center gap-4">
-            <UserAvatar :name="user.user_name" :src="user.avatar" />
-
-            <div class="grid flex-1 text-left leading-tight">
-                <span class="truncate font-medium">
-                    {{ user.user_name }}
-                </span>
-                <span class="truncate text-sm text-muted-foreground"
-                    >beginner</span
-                >
-            </div>
-        </div>
+        <UserAvatar v-if="user" :name="user.user_name" :src="user.avatar" />
 
         <Button v-if="!user" variant="secondary" @click="() => (open = 'login')"
             >Login</Button
