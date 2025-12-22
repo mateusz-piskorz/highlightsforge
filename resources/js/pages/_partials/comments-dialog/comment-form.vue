@@ -13,15 +13,14 @@ const queryClient = useQueryClient();
 
 const { clipId } = useCommentsDialog();
 
-const { initContent, parentId, commentId, onCancel, onSuccess, className } =
-    defineProps<{
-        initContent?: string;
-        commentId?: number;
-        parentId?: number;
-        onCancel?: () => void;
-        onSuccess?: () => void;
-        className?: string;
-    }>();
+const { initContent, parentId, commentId, onCancel, onSuccess, className } = defineProps<{
+    initContent?: string;
+    commentId?: number;
+    parentId?: number;
+    onCancel?: () => void;
+    onSuccess?: () => void;
+    className?: string;
+}>();
 
 const form = useForm({ content: initContent || '' });
 
@@ -32,6 +31,7 @@ const submit = async () => {
         data = (
             await axios.put(`/api/comments/${commentId}`, {
                 ...form.data(),
+                clip_id: clipId.value,
                 parent_id: parentId,
             })
         ).data;
@@ -39,6 +39,7 @@ const submit = async () => {
         data = (
             await axios.post('/api/comments', {
                 ...form.data(),
+                clip_id: clipId.value,
                 parent_id: parentId,
             })
         ).data;
@@ -52,7 +53,7 @@ const submit = async () => {
 
     toast.success(data.message);
     await queryClient.refetchQueries({
-        queryKey: ['comments', clipId, parentId],
+        queryKey: ['comments', clipId.value, parentId],
     });
     onSuccess?.();
 };
@@ -81,11 +82,7 @@ const submit = async () => {
                 >
                     Cancel
                 </Button>
-                <Button
-                    :disabled="form.processing"
-                    type="submit"
-                    variant="secondary"
-                >
+                <Button :disabled="form.processing" type="submit" variant="secondary">
                     {{ initContent ? 'Save' : 'Respond' }}
                 </Button>
             </div>

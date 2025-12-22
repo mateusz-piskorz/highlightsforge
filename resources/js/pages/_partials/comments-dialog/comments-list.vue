@@ -9,16 +9,15 @@ import Comment from './comment.vue';
 const { user } = usePage().props.auth;
 
 const { parentId, nestLevel } = defineProps<{
-    parentId?: number;
+    parentId: number | null;
     nestLevel?: number;
 }>();
 
 const { clipId } = useCommentsDialog();
 
 const { data } = useQuery({
-    queryKey: ['comments', clipId, parentId],
-    queryFn: async () =>
-        (await axios.get('api/comments', { params: { parentId } })).data,
+    queryKey: ['comments', clipId.value, parentId],
+    queryFn: async () => (await axios.get('api/comments', { params: { parentId } })).data,
 });
 </script>
 

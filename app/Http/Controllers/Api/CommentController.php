@@ -23,7 +23,7 @@ class CommentController
 
     public function store(Request $request)
     {
-        $validated = $request->validate(['content' => 'required|string|min:3|max:250', 'parent_id' => 'nullable|integer']);
+        $validated = $request->validate(['content' => 'required|string|min:3|max:250', 'parent_id' => 'nullable|integer', "clip_id" => 'required|integer']);
         Comment::create([ ...$validated, 'user_id' => $request->user()->id]);
         return response()->json([
             'success' => true,
