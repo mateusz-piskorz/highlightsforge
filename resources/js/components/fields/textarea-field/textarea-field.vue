@@ -23,10 +23,7 @@ const value = computed({
 });
 
 const inputId = computed(() => {
-    return (
-        (attrs.id as string) ||
-        `input-field-${Math.random().toString(36).substr(2, 9)}`
-    );
+    return (attrs.id as string) || `input-field-${Math.random().toString(36).substr(2, 9)}`;
 });
 </script>
 
@@ -40,11 +37,6 @@ const inputId = computed(() => {
             :aria-describedby="errorMessage ? `${inputId}-error` : undefined"
         />
 
-        <InputError
-            v-if="errorMessage"
-            :message="errorMessage"
-            class="mt-2"
-            :id="`${inputId}-error`"
-        />
+        <InputError v-if="errorMessage" :message="errorMessage" class="mt-2" :id="`${inputId}-error`" />
     </div>
 </template>

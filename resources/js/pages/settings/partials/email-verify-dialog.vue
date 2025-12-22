@@ -2,12 +2,7 @@
 import { InputField } from '@/components/fields/input-field';
 import InputError from '@/components/input-error.vue';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { PinInput, PinInputSlot } from '@/components/ui/pin-input';
 import { onSubmitEmail, onSubmitVerifyCode } from '@/lib/verify-email';
 import { router, useForm } from '@inertiajs/vue3';
@@ -28,9 +23,7 @@ const verifyCodeForm = useForm({ code: [] });
     <Dialog :open="open" @update:open="setOpen">
         <DialogContent>
             <DialogTitle>Verify your E-mail</DialogTitle>
-            <DialogDescription>
-                Enter your E-mail below and we will send you secret code
-            </DialogDescription>
+            <DialogDescription> Enter your E-mail below and we will send you secret code </DialogDescription>
 
             <!-- email scene -->
             <form
@@ -48,20 +41,10 @@ const verifyCodeForm = useForm({ code: [] });
                 "
                 class="space-y-6"
             >
-                <InputField
-                    v-model="emailForm.email"
-                    :error-message="emailForm.errors.email"
-                    autocomplete="email"
-                    label="Email"
-                />
+                <InputField v-model="emailForm.email" :error-message="emailForm.errors.email" autocomplete="email" label="Email" />
 
                 <div class="flex gap-4">
-                    <Button
-                        @click="() => setOpen(false)"
-                        type="button"
-                        variant="secondary"
-                        >Cancel</Button
-                    >
+                    <Button @click="() => setOpen(false)" type="button" variant="secondary">Cancel</Button>
                     <Button :disabled="emailForm.processing">Send Code</Button>
                 </div>
             </form>
@@ -84,32 +67,13 @@ const verifyCodeForm = useForm({ code: [] });
                 "
                 class="space-y-6"
             >
-                <PinInput
-                    id="otp"
-                    placeholder="○"
-                    otp
-                    v-model="verifyCodeForm.code"
-                >
-                    <PinInputSlot
-                        v-for="(id, index) in 6"
-                        :key="id"
-                        :index="index"
-                        :disabled="emailForm.processing"
-                        autofocus
-                    />
+                <PinInput id="otp" placeholder="○" otp v-model="verifyCodeForm.code">
+                    <PinInputSlot v-for="(id, index) in 6" :key="id" :index="index" :disabled="emailForm.processing" autofocus />
                 </PinInput>
-                <InputError
-                    :message="verifyCodeForm.errors.code"
-                    class="mt-2"
-                />
+                <InputError :message="verifyCodeForm.errors.code" class="mt-2" />
 
                 <div class="flex gap-4">
-                    <Button
-                        @click="() => setOpen(false)"
-                        type="button"
-                        variant="secondary"
-                        >Cancel</Button
-                    >
+                    <Button @click="() => setOpen(false)" type="button" variant="secondary">Cancel</Button>
                     <Button :disabled="emailForm.processing">Verify</Button>
                 </div>
             </form>

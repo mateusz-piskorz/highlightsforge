@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CollapsibleText from '@/components/collapsible-text.vue';
 import ConfirmDialog from '@/components/confirm-dialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import UserAvatar from '@/components/user-avatar.vue';
@@ -7,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
 import { PenSquare } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import CommentActions from './comment-actions.vue';
 import CommentForm from './comment-form.vue';
@@ -35,18 +36,14 @@ const { className, id, author, content, deleted, isOwner, updatedAt, replies_cou
         };
     }>();
 
-const { setActiveThread, clipId } = useCommentsDialog();
-
-const maxLength = 225;
+const { setActiveThread, postId } = useCommentsDialog();
 
 const editing = ref(false);
-const isExpanded = ref(false);
+
 const showReplyForm = ref(showRepliesInit);
 const showReplies = ref(showRepliesInit);
 const confirmOpen = ref(false);
 const upvoteDisabled = ref(false);
-
-const isTooLong = computed(() => content.length > maxLength);
 
 const removeHandler = async () => {
     const { data } = await axios.delete(`/api/comments/${id}`);
@@ -92,10 +89,7 @@ const removeHandler = async () => {
             :onSuccess="() => (editing = false)"
         />
 
-        <p v-if="!editing" :class="cn('font-sm', deleted && 'line-through')">
-            {{ deleted ? '(comment removed)' : !isTooLong || isExpanded ? content : `${content.substring(0, maxLength)}...` }}
-            <Button v-if="isTooLong && !isExpanded" class="pl-1 text-muted-foreground" @click="isExpanded = true" variant="link"> more </Button>
-        </p>
+        <CollapsibleText :content="deleted ? '(comment removed)' : content" :className="deleted ? 'line-through' : undefined" />
 
         <CommentActions
             :upvoteDisabled
@@ -115,7 +109,7 @@ const removeHandler = async () => {
                     }
 
                     await queryClient.refetchQueries({
-                        queryKey: ['comments', clipId, parentId],
+                        queryKey: ['comments', postId, parentId],
                     });
 
                     toast.success(data.message);

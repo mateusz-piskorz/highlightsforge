@@ -14,16 +14,15 @@ class CommentController
      */
     public function index(Request $request)
     {
-        // we need to return upvoted and upvoteCount
-        $validated = $request->validate(['limit' => 'nullable|integer', "parentId" => "nullable|integer"]);
+        $validated = $request->validate(['limit' => 'nullable|integer', "parentId" => "nullable|integer", "postId" => "integer"]);
         $parentId = $validated['parentId'] ?? null;
-        $limit = $request->input('limit', 25);
-        return response()->json(Comment::query()->where('parent_id', $parentId)->with(['user'])->withCount('replies')->withCount('upvotes')->paginate($limit));
+        $limit = $request->input('limit', 3);
+        return response()->json(Comment::query()->where('post_id', $validated['postId'])->where('parent_id', $parentId)->with(['user'])->withCount('replies')->withCount('upvotes')->paginate($limit));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate(['content' => 'required|string|min:3|max:250', 'parent_id' => 'nullable|integer', "clip_id" => 'required|integer']);
+        $validated = $request->validate(['content' => 'required|string|min:3|max:1000', 'parent_id' => 'nullable|integer', "post_id" => 'required|integer']);
         Comment::create([ ...$validated, 'user_id' => $request->user()->id]);
         return response()->json([
             'success' => true,

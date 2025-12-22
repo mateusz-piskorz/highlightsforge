@@ -25,10 +25,7 @@ const value = computed({
 });
 
 const inputId = computed(() => {
-    return (
-        (attrs.id as string) ||
-        `input-field-${Math.random().toString(36).substr(2, 9)}`
-    );
+    return (attrs.id as string) || `input-field-${Math.random().toString(36).substr(2, 9)}`;
 });
 </script>
 
@@ -36,18 +33,8 @@ const inputId = computed(() => {
     <div class="space-y-4">
         <Label v-if="props.label" :for="inputId">{{ props.label }}</Label>
 
-        <Input
-            v-model="value"
-            v-bind="attrs"
-            :id="inputId"
-            :aria-describedby="errorMessage ? `${inputId}-error` : undefined"
-        />
+        <Input v-model="value" v-bind="attrs" :id="inputId" :aria-describedby="errorMessage ? `${inputId}-error` : undefined" />
 
-        <InputError
-            v-if="errorMessage"
-            :message="errorMessage"
-            class="mt-2"
-            :id="`${inputId}-error`"
-        />
+        <InputError v-if="errorMessage" :message="errorMessage" class="mt-2" :id="`${inputId}-error`" />
     </div>
 </template>

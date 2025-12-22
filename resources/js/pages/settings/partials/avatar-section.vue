@@ -53,13 +53,7 @@ const deleteAvatar = async () => {
 </script>
 
 <template>
-    <ImgCropDialog
-        v-if="imSrc"
-        :open="openCrop"
-        :set-open="(val) => (openCrop = val)"
-        :onCrop="onCrop"
-        :img-src="imSrc"
-    />
+    <ImgCropDialog v-if="imSrc" :open="openCrop" :set-open="(val) => (openCrop = val)" :onCrop="onCrop" :img-src="imSrc" />
 
     <ConfirmDialog
         :open="openConfirm"
@@ -71,28 +65,14 @@ const deleteAvatar = async () => {
     />
 
     <div class="flex flex-col space-y-6 px-5 sm:px-6 md:px-8 lg:px-10">
-        <Heading
-            title="Update avatar"
-            description="Choose a clear, distinctive image to help others recognize you."
-        />
+        <Heading title="Update avatar" description="Choose a clear, distinctive image to help others recognize you." />
 
-        <Card
-            v-if="user.avatar"
-            class="flex max-w-[400px] items-center justify-center gap-8 text-center"
-        >
+        <Card v-if="user.avatar" class="flex max-w-[400px] items-center justify-center gap-8 text-center">
             <UserAvatar :name="user.user_name" size="lg" :src="user.avatar" />
         </Card>
         <div class="flex gap-4">
-            <Button
-                v-if="user.avatar"
-                variant="destructive"
-                @click="openConfirm = true"
-                >Remove</Button
-            >
-            <ImgInput
-                :onChange="changeHandler"
-                :btn-state="Boolean(user.avatar)"
-            />
+            <Button v-if="user.avatar" variant="destructive" @click="openConfirm = true">Remove</Button>
+            <ImgInput :onChange="changeHandler" :btn-state="Boolean(user.avatar)" />
         </div>
     </div>
 </template>

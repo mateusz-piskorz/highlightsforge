@@ -11,13 +11,21 @@ return new class() extends Migration
      */
     public function up(): void
     {
-        Schema::create('clips', function (Blueprint $table) {
+        Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string("title");
+            $table->text("description")->nullable();
             $table->string("file_path");
             $table->string("file_type");
             $table->timestamps();
+        });
+
+        Schema::create('post_upvotes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->unique(['user_id', 'post_id']);
         });
     }
 
@@ -26,6 +34,7 @@ return new class() extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clips');
+        Schema::dropIfExists('posts');
+        Schema::dropIfExists('post_upvotes');
     }
 };

@@ -13,10 +13,7 @@ const { active, disabled, upvotes } = defineProps<{
 <template>
     <Button variant="ghost" :disabled="disabled">
         <span class="sr-only">upvotes</span>
-        <Sparkles
-            :fill="active ? 'var(--accent)' : 'none'"
-            :class="cn(active && 'text-accent')"
-        />
+        <Sparkles :fill="active ? 'var(--accent)' : 'none'" :class="cn(active && 'text-accent')" />
         {{ upvotes }}
     </Button>
 </template>
