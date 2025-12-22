@@ -11,12 +11,10 @@ export const useCommentsDialog = () => {
         >;
         setActiveThread: (val: { parentId: number | null; id: number }) => void;
         goBack: () => void;
-        clipId: ComputedRef<number>;
+        postId: ComputedRef<number>;
     }>('comments-dialog');
 
-    if (!obj) {
-        throw new Error('useCommentsDialog  must be used inside comments-dialog provider');
-    }
+    if (!obj) throw new Error('useCommentsDialog must be used inside comments-dialog provider');
 
     return obj;
 };

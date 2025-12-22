@@ -30,17 +30,9 @@ const deleteHandler = async () => {
         description="Do you really want to remove your Account? This is a permanent operation and can't be undone. All your resources will be lost"
     />
 
-    <div
-        class="flex flex-col items-start space-y-6 px-5 sm:px-6 md:px-8 lg:px-10"
-    >
-        <Heading
-            title="Delete account"
-            description="delete account and all of its resources permanently"
-        />
+    <div class="flex flex-col items-start space-y-6 px-5 sm:px-6 md:px-8 lg:px-10">
+        <Heading title="Delete account" description="delete account and all of its resources permanently" />
 
-        <DangerActionCard
-            btn-text="Delete Account"
-            :onDelete="() => (openConfirm = true)"
-        />
+        <DangerActionCard btn-text="Delete Account" :onDelete="() => (openConfirm = true)" />
     </div>
 </template>
