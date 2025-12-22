@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class ClipController
 {
-    public function index(Request $request)
+    public function index()
     {
-        $clips = Clip::query()->with('user')->get();
+        $clips = Clip::query()->with('user')->withCount('comments')->get();
         return response()->json([
             'clips' => $clips
         ]);

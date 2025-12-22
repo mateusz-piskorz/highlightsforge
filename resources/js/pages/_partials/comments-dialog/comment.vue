@@ -15,40 +15,27 @@ import CommentsList from './comments-list.vue';
 
 const queryClient = useQueryClient();
 
-const {
-    className,
-    id,
-    author,
-    content,
-    deleted,
-    isOwner,
-    updatedAt,
-    replies_count,
-    nestLevel,
-    parentId,
-    upvoted,
-    upvotes_count,
-    showRepliesInit,
-} = defineProps<{
-    showRepliesInit?: boolean;
-    id: number;
-    upvoted: boolean;
-    upvotes_count: number;
-    parentId?: number;
-    nestLevel: number;
-    className?: string;
-    content: string;
-    deleted: boolean | null;
-    isOwner: boolean;
-    updatedAt: string;
-    replies_count: number;
-    author: {
-        name: string;
-        avatar: string | null;
-    };
-}>();
+const { className, id, author, content, deleted, isOwner, updatedAt, replies_count, nestLevel, parentId, upvoted, upvotes_count, showRepliesInit } =
+    defineProps<{
+        showRepliesInit?: boolean;
+        id: number;
+        upvoted: boolean;
+        upvotes_count: number;
+        parentId?: number;
+        nestLevel: number;
+        className?: string;
+        content: string;
+        deleted: boolean | null;
+        isOwner: boolean;
+        updatedAt: string;
+        replies_count: number;
+        author: {
+            name: string;
+            avatar: string | null;
+        };
+    }>();
 
-const { activeThread, setActiveThread, clipId, goBack } = useCommentsDialog();
+const { setActiveThread, clipId } = useCommentsDialog();
 
 const maxLength = 225;
 
@@ -87,18 +74,9 @@ const removeHandler = async () => {
 
     <div :class="cn('space-y-6 px-5 py-6', className)">
         <div class="flex">
-            <UserAvatar
-                :name="author.name"
-                :src="author.avatar"
-                :commentedAt="updatedAt"
-                :youIndicator="isOwner"
-            />
+            <UserAvatar :name="author.name" :src="author.avatar" :commentedAt="updatedAt" :youIndicator="isOwner" />
 
-            <Button
-                v-if="isOwner"
-                variant="ghost"
-                @click="() => (editing = !editing)"
-            >
+            <Button v-if="isOwner" variant="ghost" @click="() => (editing = !editing)">
                 <span class="sr-only">edit comment</span>
                 <PenSquare class="size-4" />
             </Button>
@@ -115,21 +93,8 @@ const removeHandler = async () => {
         />
 
         <p v-if="!editing" :class="cn('font-sm', deleted && 'line-through')">
-            {{
-                deleted
-                    ? '(comment removed)'
-                    : !isTooLong || isExpanded
-                      ? content
-                      : `${content.substring(0, maxLength)}...`
-            }}
-            <Button
-                v-if="isTooLong && !isExpanded"
-                class="pl-1 text-muted-foreground"
-                @click="isExpanded = true"
-                variant="link"
-            >
-                more
-            </Button>
+            {{ deleted ? '(comment removed)' : !isTooLong || isExpanded ? content : `${content.substring(0, maxLength)}...` }}
+            <Button v-if="isTooLong && !isExpanded" class="pl-1 text-muted-foreground" @click="isExpanded = true" variant="link"> more </Button>
         </p>
 
         <CommentActions
@@ -142,9 +107,7 @@ const removeHandler = async () => {
             @upvoteEvent="
                 async () => {
                     upvoteDisabled = true;
-                    const { data } = await axios.post(
-                        `/api/comments/${id}/upvote`,
-                    );
+                    const { data } = await axios.post(`/api/comments/${id}/upvote`);
 
                     if (!data.success) {
                         toast.error(data.message);
@@ -195,10 +158,6 @@ const removeHandler = async () => {
             :onSuccess="() => (showReplyForm = false)"
         />
 
-        <CommentsList
-            v-if="showReplies"
-            :nestLevel="nestLevel + 1"
-            :parentId="id"
-        />
+        <CommentsList v-if="showReplies" :nestLevel="nestLevel + 1" :parentId="id" />
     </div>
 </template>

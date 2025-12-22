@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import Separator from '@/components/ui/separator/Separator.vue';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { usePage } from '@inertiajs/vue3';
 import { useQueryClient } from '@tanstack/vue-query';
 import { ChevronLeft } from 'lucide-vue-next';
@@ -19,10 +13,11 @@ const { user } = usePage().props.auth;
 
 const queryClient = useQueryClient();
 
-const { open, setOpen, clipId } = defineProps<{
+const { clipId, open, setOpen, totalResponses } = defineProps<{
     open: boolean;
     setOpen: (arg: boolean) => void;
     clipId: number;
+    totalResponses: number;
 }>();
 
 type ActiveComment = { parentId: number | null; id: number };
@@ -30,32 +25,24 @@ type ActiveComment = { parentId: number | null; id: number };
 const activeThread = ref<ActiveComment[] | null>(null);
 
 const setActiveThread = (val: ActiveComment) => {
-    activeThread.value = activeThread.value
-        ? [...activeThread.value, val]
-        : [val];
+    activeThread.value = activeThread.value ? [...activeThread.value, val] : [val];
 };
 
 const goBack = () => {
-    activeThread.value = activeThread.value
-        ? activeThread.value?.slice(0, -1)
-        : null;
+    activeThread.value = activeThread.value ? activeThread.value?.slice(0, -1) : null;
 };
 
 provide('comments-dialog', {
     activeThread,
     setActiveThread,
     goBack,
-    clipId,
+    clipId: computed(() => clipId),
 });
 
 const activeComment = computed(() => {
     if (!activeThread.value || activeThread.value?.length === 0) return false;
     const { parentId, id } = activeThread.value[activeThread.value?.length - 1];
-    const { data } = queryClient.getQueryData([
-        'comments',
-        clipId,
-        parentId,
-    ]) as any;
+    const { data } = queryClient.getQueryData(['comments', clipId, parentId]) as any;
 
     return data.find((e: any) => e.id === id);
 });
@@ -64,25 +51,15 @@ const activeComment = computed(() => {
 <template>
     <Dialog :open="open" @update:open="setOpen">
         <DialogContent class="space-y-8 px-0">
-            <DialogTitle v-if="!activeComment" class="px-5"
-                >Responses (25)</DialogTitle
-            >
+            <DialogTitle v-if="!activeComment" class="px-5">Responses ({{ totalResponses }})</DialogTitle>
             <div v-if="activeComment" class="flex items-center px-5">
-                <Button
-                    @click="goBack"
-                    variant="ghost"
-                    class="relative mr-2 px-1 pl-0"
-                >
+                <Button @click="goBack" variant="ghost" class="relative mr-2 px-1 pl-0">
                     <span class="sr-only">go back</span>
                     <ChevronLeft class="size-6" />
                 </Button>
                 Replies
             </div>
-            <DialogDescription v-if="!activeComment" class="px-5">
-                description
-            </DialogDescription>
 
-            <Separator v-if="!activeComment" />
             <CommentForm v-if="!activeComment" />
             <Comment
                 v-if="activeComment"
@@ -103,7 +80,7 @@ const activeComment = computed(() => {
                 :isOwner="user?.id === activeComment.user_id"
                 :updatedAt="activeComment.updated_at"
             />
-            <CommentsList v-if="!activeComment" />
+            <CommentsList v-if="!activeComment" :parentId="null" />
         </DialogContent>
     </Dialog>
 </template>
