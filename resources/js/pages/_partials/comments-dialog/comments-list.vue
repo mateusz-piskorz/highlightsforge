@@ -17,7 +17,7 @@ const { postId } = useCommentsDialog();
 
 const { data } = useQuery({
     queryKey: ['comments', postId.value, parentId],
-    queryFn: async () => (await axios.get('api/comments', { params: { parentId } })).data,
+    queryFn: async () => (await axios.get('api/comments', { params: { parentId, postId: postId.value } })).data,
 });
 </script>
 

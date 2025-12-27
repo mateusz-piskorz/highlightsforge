@@ -1,49 +1,36 @@
 <script setup lang="ts">
 import CreatePostDialog from '@/components/create-post-dialog.vue';
-import NewPostBtn from '@/components/new-post-btn.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Card from '@/components/ui/card/Card.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import UserAvatar from '@/components/user-avatar.vue';
 import { usePostFilters } from '@/lib/composables/usePostFilters';
 import { usePage } from '@inertiajs/vue3';
 import { useQuery } from '@tanstack/vue-query';
 import axios from 'axios';
-import { MessageCircle, Settings, Sparkles } from 'lucide-vue-next';
+import { Settings } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+import PostActions from './post-actions.vue';
 
 defineEmits(['commentsEvent']);
-
-const { q } = usePostFilters();
-
-const { data } = useQuery({
-    queryKey: ['posts', q],
-    queryFn: async () => (await axios.get('api/posts', { params: { q: q.value } })).data,
-});
-
 const { user } = usePage().props.auth;
 
+const { q, sorting } = usePostFilters();
+
+const { data, refetch } = useQuery({
+    queryKey: ['posts', q, sorting],
+    queryFn: async () => (await axios.get('api/posts', { params: { q: q.value, sorting: sorting.value } })).data,
+});
+
 const open = ref<null | 'register' | 'login' | 'post'>(null);
+
+const upvoteDisabled = ref(false);
 </script>
 
 <template>
     <CreatePostDialog :open="open === 'post'" :set-open="(val) => (open = val ? 'post' : null)" />
     <div class="mx-auto max-w-[900px]">
-        <div class="my-10 space-y-5 px-5 lg:px-0">
-            <NewPostBtn @click="() => (open = user ? 'post' : 'login')" />
-
-            <Select default-value="featured">
-                <SelectTrigger class="max-w-[150px]">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="featured"> Featured </SelectItem>
-                    <SelectItem value="new-posts"> new-posts </SelectItem>
-                    <SelectItem value="latest-activity"> latest-activity </SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
         <div class="space-y-20 px-0 sm:px-6 md:px-8 lg:px-0">
             <Card v-for="post in data?.posts" :key="post.id" class="mx-auto flex min-w-[310px] flex-col rounded-none sm:rounded-xl lg:min-w-[660px]">
                 <div class="flex items-center justify-between px-4">
@@ -66,24 +53,29 @@ const open = ref<null | 'register' | 'login' | 'post'>(null);
                     <source :src="`/storage/${post.file_path}`" :type="post.file_type" />
                 </video>
 
-                <div class="flex items-center justify-between gap-20 px-4">
-                    <div class="flex items-center">
-                        <Button variant="ghost" class="relative flex items-center gap-2 text-lg">
-                            <span class="sr-only">upvotes</span>
-                            <Sparkles class="size-3.5" /> 2
-                        </Button>
+                <PostActions
+                    @commentsClick="$emit('commentsEvent', { id: post.id, totalResponses: post.comments_count })"
+                    :comments_count="post.comments_count"
+                    :isOwner="post.user.id === user?.id"
+                    :upvoted="post.upvoted"
+                    :upvotes_count="post.upvotes_count"
+                    :upvoteDisabled
+                    @upvoteEvent="
+                        async () => {
+                            upvoteDisabled = true;
+                            const { data } = await axios.post(`/api/posts/${post.id}/upvote`);
 
-                        <Button
-                            @click="$emit('commentsEvent', { id: post.id, totalResponses: post.comments_count })"
-                            variant="ghost"
-                            class="relative flex items-center gap-2 text-lg"
-                        >
-                            <span class="sr-only">comments</span>
-                            <MessageCircle class="size-4.5" />
-                            {{ post.comments_count }}
-                        </Button>
-                    </div>
-                </div>
+                            if (!data.success) {
+                                toast.error(data.message);
+                                return;
+                            }
+
+                            await refetch();
+                            toast.success(data.message);
+                            upvoteDisabled = false;
+                        }
+                    "
+                />
             </Card>
         </div>
     </div>

@@ -22,13 +22,13 @@ const form = useForm({ phrase: reactive.value });
         :class="cn('space-y-6', className)"
         @submit.prevent="
             () => {
-                setQ(form.phrase);
+                setQ(form.phrase || null);
                 onSubmit?.();
             }
         "
     >
         <div class="flex">
-            <InputField v-model="form.phrase" :error-message="form.errors.phrase" class="rounded-l-md dark:bg-input" placeholder="search" />
+            <InputField v-model="form.phrase as string" :error-message="form.errors.phrase" class="rounded-l-md dark:bg-input" placeholder="search" />
             <Button variant="ghost" class="rounded-l-none dark:bg-input">
                 <Search class="size-4" />
             </Button>
