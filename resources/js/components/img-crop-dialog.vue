@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { ref } from 'vue';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
@@ -57,17 +52,8 @@ const handleCropButtonClick = () => {
                     />
 
                     <div class="flex gap-4">
-                        <Button
-                            @click="() => setOpen(false)"
-                            type="button"
-                            variant="secondary"
-                            >Cancel</Button
-                        >
-                        <Button
-                            :disabled="!lastChangeData"
-                            @click="handleCropButtonClick"
-                            >Crop Image</Button
-                        >
+                        <Button @click="() => setOpen(false)" type="button" variant="secondary">Cancel</Button>
+                        <Button :disabled="!lastChangeData" @click="handleCropButtonClick">Crop Image</Button>
                     </div>
                 </div>
             </div>

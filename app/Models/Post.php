@@ -8,17 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
-class Comment extends Model
+class Post extends Model
 {
-
     protected $appends = ['upvoted'];
 
     protected $fillable = [
         'user_id',
-        'post_id',
-        'parent_id',
-        'content',
-        'deleted'
+        'title',
+        'description',
+        'file_path',
+        'file_type'
     ];
 
     protected function upvoted(): Attribute
@@ -34,7 +33,7 @@ class Comment extends Model
         );
     }
 
-    public function upvotedModel(): CommentUpvote | null
+    public function upvotedModel(): PostUpvote | null
     {
         if (!Auth::check()) {
             return null;
@@ -43,42 +42,18 @@ class Comment extends Model
         return $this->upvotes()->where('user_id', Auth::id())->first();
     }
 
+    public function upvotes(): HasMany
+    {
+        return $this->hasMany(PostUpvote::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function upvotes(): HasMany
+    public function comments(): HasMany
     {
-        return $this->hasMany(CommentUpvote::class);
+        return $this->hasMany(Comment::class);
     }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Comment::class, 'parent_id');
-    }
-
-    public function replies(): HasMany
-    {
-        return $this->hasMany(Comment::class, 'parent_id');
-    }
-
-    public function deleteParentRecursively()
-    {
-
-        if ($this->deleted && $this->replies()->count() === 0) {
-            $parent = $this->parent;
-            $this->delete();
-
-            if ($parent) {
-                $parent->deleteParentRecursively();
-            }
-        }
-    }
-
-    public function post(): BelongsTo
-    {
-        return $this->belongsTo(Post::class);
-    }
-
 }

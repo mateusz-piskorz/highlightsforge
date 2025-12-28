@@ -11,7 +11,7 @@ import { toast } from 'vue-sonner';
 
 const queryClient = useQueryClient();
 
-const { clipId } = useCommentsDialog();
+const { postId } = useCommentsDialog();
 
 const { initContent, parentId, commentId, onCancel, onSuccess, className } = defineProps<{
     initContent?: string;
@@ -31,7 +31,7 @@ const submit = async () => {
         data = (
             await axios.put(`/api/comments/${commentId}`, {
                 ...form.data(),
-                clip_id: clipId.value,
+                post_id: postId.value,
                 parent_id: parentId,
             })
         ).data;
@@ -39,7 +39,7 @@ const submit = async () => {
         data = (
             await axios.post('/api/comments', {
                 ...form.data(),
-                clip_id: clipId.value,
+                post_id: postId.value,
                 parent_id: parentId,
             })
         ).data;
@@ -53,7 +53,7 @@ const submit = async () => {
 
     toast.success(data.message);
     await queryClient.refetchQueries({
-        queryKey: ['comments', clipId.value, parentId],
+        queryKey: ['comments', postId.value, parentId],
     });
     onSuccess?.();
 };

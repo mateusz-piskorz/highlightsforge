@@ -4,7 +4,7 @@
     <div class="flex items-center gap-2">
         <svg
             v-bind="$attrs"
-            class="size-10 fill-current text-accent"
+            class="size-8 fill-current text-accent"
             width="170"
             height="102"
             viewBox="0 0 170 102"
@@ -21,6 +21,6 @@
             />
         </svg>
 
-        <p class="truncate leading-tight font-semibold">Highlights Forge</p>
+        <p class="truncate text-sm leading-tight font-semibold">Highlights Forge</p>
     </div>
 </template>
