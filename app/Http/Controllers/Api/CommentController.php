@@ -16,7 +16,7 @@ class CommentController
     {
         $validated = $request->validate(['limit' => 'nullable|integer', "parentId" => "nullable|integer", "postId" => "integer"]);
         $parentId = $validated['parentId'] ?? null;
-        $limit = $request->input('limit', 25);
+        $limit = $request->input('limit', 3);
         return response()->json(Comment::query()->where('post_id', $validated['postId'])->where('parent_id', $parentId)->with(['user'])->withCount('replies')->withCount('upvotes')->paginate($limit));
     }
 

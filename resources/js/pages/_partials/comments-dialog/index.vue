@@ -40,11 +40,13 @@ provide('comments-dialog', {
 });
 
 const activeComment = computed(() => {
-    if (!activeThread.value || activeThread.value?.length === 0) return false;
-    const { parentId, id } = activeThread.value[activeThread.value?.length - 1];
-    const { data } = queryClient.getQueryData(['comments', postId, parentId]) as any;
+    if (!activeThread.value || activeThread.value.length === 0) return null;
+    const { parentId, id } = activeThread.value[activeThread.value.length - 1];
+    const cache = queryClient.getQueryData(['comments', postId, parentId]) as any;
+    if (!cache || !cache.pages) return null;
+    const allComments = cache.pages.flatMap((page: any) => page.data);
 
-    return data.find((e: any) => e.id === id);
+    return allComments.find((e: any) => e.id === id) || null;
 });
 </script>
 

@@ -11,7 +11,8 @@ class PostController
 {
     public function index(Request $request)
     {
-        $validated = $request->validate(['q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
+        $validated = $request->validate(['limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
+        $limit = $request->input('limit', 20);
 
         $query = Post::query();
         $q = $validated['q'] ?? null;
@@ -38,11 +39,7 @@ class PostController
             }
         }
 
-        $posts = $query->get();
-
-        return response()->json([
-            'posts' => $posts
-        ]);
+        return response()->json($query->paginate($limit));
     }
 
     public function upvote(Request $request, Post $post)

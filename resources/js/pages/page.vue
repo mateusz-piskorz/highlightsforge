@@ -21,6 +21,12 @@ provide('post-filters', { q, setQ, sorting, setSorting });
 
 <template>
     <Head title="Home" />
+    <Header />
+
+    <AppLayout>
+        <PostsActions />
+        <PostList @commentsEvent="(args: { id: number; totalResponses: number }) => (selectedPost = args)" />
+    </AppLayout>
 
     <CommentsDialog
         v-if="selectedPost"
@@ -29,13 +35,4 @@ provide('post-filters', { q, setQ, sorting, setSorting });
         :setOpen="(val) => (selectedPost = val ? selectedPost : null)"
         :postId="selectedPost.id"
     />
-
-    <Header />
-    {{ q }}
-    {{ sorting }}
-
-    <AppLayout>
-        <PostsActions />
-        <PostList @commentsEvent="(args: { id: number; totalResponses: number }) => (selectedPost = args)" />
-    </AppLayout>
 </template>
