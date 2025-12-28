@@ -16,7 +16,7 @@ return new class() extends Migration
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('parent_id')->nullable()->constrained(table: 'comments', indexName: 'comments_parent_id')->nullOnDelete();
-            $table->string('content');
+            $table->text('content');
             $table->boolean('deleted')->nullable();
             $table->timestamps();
         });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import SpinLoader from '@/components/spin-loader.vue';
 import Button from '@/components/ui/button/Button.vue';
-import SpinLoader from '@/components/ui/spin-loader.vue';
 import { useCommentsDialog } from '@/lib/composables/useCommentsDialog';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/vue3';
@@ -18,7 +18,7 @@ const { parentId, nestLevel } = defineProps<{
 
 const { postId } = useCommentsDialog();
 
-const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = useInfiniteQuery({
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = useInfiniteQuery({
     queryKey: ['comments', postId.value, parentId],
     queryFn: async ({ pageParam }) => (await axios.get('api/comments', { params: { parentId, postId: postId.value, page: pageParam } })).data,
     getNextPageParam: (lastPage) => (lastPage.next_page_url ? lastPage.current_page + 1 : undefined),

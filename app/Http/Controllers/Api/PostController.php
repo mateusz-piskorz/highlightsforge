@@ -42,6 +42,20 @@ class PostController
         return response()->json($query->paginate($limit));
     }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate(['file' => 'required|file|max:102400|mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp', 'title' => 'required|string', 'description' => 'nullable|string']);
+        $file = $request->file('file');
+        $path = $file->store('posts', 'public');
+
+        Post::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'description' => $validated['description'], 'file_path' => $path, 'file_type' => $file->getMimeType()]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post stored successfully'
+        ]);
+    }
+
     public function upvote(Request $request, Post $post)
     {
         $upvote = $post->upvotedModel();
@@ -55,20 +69,6 @@ class PostController
         return response()->json([
             'success' => true,
             'message' => 'Post upvoted successfully'
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate(['file' => 'required|file|max:102400|mimetypes:video/mp4,video/webm', 'title' => 'required|string']);
-        $file = $request->file('file');
-        $path = $file->store('posts', 'public');
-
-        Post::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'file_path' => $path, 'file_type' => $file->getMimeType()]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Post stored successfully'
         ]);
     }
 

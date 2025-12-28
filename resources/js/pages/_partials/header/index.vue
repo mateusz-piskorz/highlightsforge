@@ -21,7 +21,7 @@ const openMenu = ref(false);
     <LoginDialog :open="open === 'login'" :set-open="(val) => (open = val ? 'login' : null)" :register-action="() => (open = 'register')" />
     <MobileMenu :open="openMenu" :set-open="(val) => (openMenu = val)" />
 
-    <header class="sticky top-0 z-20 mx-auto border-b bg-card/70 backdrop-blur-xl">
+    <header class="fixed top-0 z-20 mx-auto w-full border-b bg-card/70 backdrop-blur-xl">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
             <AppLogo />
 
@@ -36,11 +36,14 @@ const openMenu = ref(false);
                     variant="secondary"
                     @click="
                         () => {
-                            if (!user) open = 'login';
+                            if (!user) {
+                                open = 'login';
+                            }
                         }
                     "
-                    >{{ user ? 'Profile' : 'Login' }}</Button
                 >
+                    {{ user ? 'Profile' : 'Login' }}
+                </Button>
             </div>
         </div>
     </header>

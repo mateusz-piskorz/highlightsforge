@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CollapsibleText from '@/components/collapsible-text.vue';
 import ConfirmDialog from '@/components/confirm-dialog.vue';
 import Button from '@/components/ui/button/Button.vue';
 import UserAvatar from '@/components/user-avatar.vue';
@@ -92,10 +93,7 @@ const removeHandler = async () => {
             :onSuccess="() => (editing = false)"
         />
 
-        <p v-if="!editing" :class="cn('font-sm', deleted && 'line-through')">
-            {{ deleted ? '(comment removed)' : !isTooLong || isExpanded ? content : `${content.substring(0, maxLength)}...` }}
-            <Button v-if="isTooLong && !isExpanded" class="pl-1 text-muted-foreground" @click="isExpanded = true" variant="link"> more </Button>
-        </p>
+        <CollapsibleText :content="deleted ? '(comment removed)' : content" :className="deleted ? 'line-through' : undefined" />
 
         <CommentActions
             :upvoteDisabled

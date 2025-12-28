@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import CollapsibleText from '@/components/collapsible-text.vue';
 import CreatePostDialog from '@/components/create-post-dialog.vue';
+import SpinLoader from '@/components/spin-loader.vue';
 import Card from '@/components/ui/card/Card.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import SpinLoader from '@/components/ui/spin-loader.vue';
 import UserAvatar from '@/components/user-avatar.vue';
 import { usePostFilters } from '@/lib/composables/usePostFilters';
 import { usePage } from '@inertiajs/vue3';
@@ -58,9 +59,21 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-                <h1 class="line-clamp-2 px-5 font-mono text-xl font-medium">{{ post.title }}</h1>
 
-                <video controls loop class="max-h-[510px] min-h-[200px] lg:min-h-[370px] dark:opacity-90">
+                <h1 class="line-clamp-2 px-5 font-mono text-xl font-medium">{{ post.title }}</h1>
+                <CollapsibleText v-if="post.description" :content="post.description" class="px-5 text-muted-foreground" />
+
+                <img
+                    v-if="post.file_type.split('/')[0] === 'image'"
+                    :src="`/storage/${post.file_path}`"
+                    class="max-h-[510px] min-h-[200px] lg:min-h-[370px] dark:opacity-90"
+                />
+                <video
+                    v-if="post.file_type.split('/')[0] === 'video'"
+                    controls
+                    loop
+                    class="max-h-[510px] min-h-[200px] lg:min-h-[370px] dark:opacity-90"
+                >
                     <source :src="`/storage/${post.file_path}`" :type="post.file_type" />
                 </video>
 
