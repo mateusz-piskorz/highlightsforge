@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
 import { PenSquare } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import CommentActions from './comment-actions.vue';
 import CommentForm from './comment-form.vue';
@@ -38,16 +38,12 @@ const { className, id, author, content, deleted, isOwner, updatedAt, replies_cou
 
 const { setActiveThread, postId } = useCommentsDialog();
 
-const maxLength = 225;
-
 const editing = ref(false);
-const isExpanded = ref(false);
+
 const showReplyForm = ref(showRepliesInit);
 const showReplies = ref(showRepliesInit);
 const confirmOpen = ref(false);
 const upvoteDisabled = ref(false);
-
-const isTooLong = computed(() => content.length > maxLength);
 
 const removeHandler = async () => {
     const { data } = await axios.delete(`/api/comments/${id}`);

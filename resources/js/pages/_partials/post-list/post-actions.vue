@@ -10,6 +10,7 @@ const { comments_count, isOwner, upvoted, upvotes_count, upvoteDisabled } = defi
     upvotes_count: number;
     upvoteDisabled: boolean;
 }>();
+console.log({ isOwner });
 </script>
 
 <template>

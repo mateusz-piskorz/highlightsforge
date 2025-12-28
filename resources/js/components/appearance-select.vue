@@ -4,7 +4,7 @@ import { useAppearance } from '@/lib/composables/useAppearance';
 import { Moon, Sun } from 'lucide-vue-next';
 import Button from './ui/button/Button.vue';
 
-const { appearance, updateAppearance } = useAppearance();
+const { updateAppearance } = useAppearance();
 </script>
 
 <template>
