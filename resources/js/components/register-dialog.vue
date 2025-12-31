@@ -24,9 +24,9 @@ const onSubmit = async () => {
         return;
     }
 
-    toast.success('account created successfully');
-    router.reload();
+    toast.success(data.message);
     setOpen(false);
+    router.visit('/profile');
 };
 </script>
 
