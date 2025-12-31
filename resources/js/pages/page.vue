@@ -4,7 +4,6 @@ import { Head } from '@inertiajs/vue3';
 import { ref, provide } from 'vue';
 import { PostList } from './_partials/post-list';
 import { CommentsDialog } from './_partials/comments-dialog';
-import { Header } from './_partials/header';
 import { SortOptions } from '@/lib/composables/usePostFilters';
 import PostsActions from './_partials/posts-actions.vue';
 
@@ -21,7 +20,6 @@ provide('post-filters', { q, setQ, sorting, setSorting });
 
 <template>
     <Head title="Home" />
-    <Header />
 
     <AppLayout>
         <PostsActions />

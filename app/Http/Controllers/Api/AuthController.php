@@ -29,6 +29,7 @@ class AuthController
 
         return response()->json([
             'message' => 'singed in successfully',
+            'success' => true,
             'user'    => $request->user()->only(['id', 'name', 'email'])
         ]);
     }
