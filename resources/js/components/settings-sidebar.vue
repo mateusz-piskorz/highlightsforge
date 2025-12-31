@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { cn } from '@/lib/utils';
+import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronLeft, Settings, UserRound } from 'lucide-vue-next';
 import Button from './ui/button/Button.vue';
+
+const { className } = defineProps<{ className?: string }>();
+
+const { url } = usePage();
 </script>
 
 <template>
-    <nav class="sticky top-[68px] hidden h-[calc(100vh-68px)] flex-col gap-4 border-r px-6 pt-12 md:flex lg:px-10">
+    <nav :class="cn('flex flex-col gap-4', className)">
         <Button class="justify-start py-5" variant="outline" as-child>
-            <Link href="/"><ChevronLeft class="size-4" /> Back</Link>
+            <Link href="/"><ChevronLeft class="size-4" />Back</Link>
         </Button>
-        <Button class="justify-start py-5" variant="outline" as-child>
-            <Link href="/profile"><UserRound class="size-4" /> Profile</Link>
+        <Button class="justify-start py-5" :variant="url === '/profile' ? 'secondary' : 'outline'" as-child>
+            <Link href="/profile"><UserRound class="size-4" />Profile</Link>
         </Button>
-        <Button class="justify-start py-5" variant="outline" as-child>
-            <Link href="/settings"><Settings class="size-4" /> Settings</Link>
+        <Button class="justify-start py-5" :variant="url === '/settings' ? 'secondary' : 'outline'" as-child>
+            <Link href="/settings"><Settings class="size-4" />Settings</Link>
         </Button>
     </nav>
 </template>
