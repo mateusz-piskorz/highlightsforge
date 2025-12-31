@@ -15,7 +15,7 @@ const isTooLong = computed(() => content.length > maxLength);
 </script>
 
 <template>
-    <p :class="cn('font-sm', className)">
+    <p :class="cn('text-sm', className)">
         {{ !isTooLong || isExpanded ? content : `${content.substring(0, maxLength)}...` }}
         <Button v-if="isTooLong && !isExpanded" class="pl-1 text-muted-foreground" @click="isExpanded = true" variant="link"> more </Button>
     </p>
