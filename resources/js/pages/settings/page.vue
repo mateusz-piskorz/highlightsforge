@@ -14,7 +14,7 @@ const { user } = usePage().props.auth;
 <template>
     <Head title="User settings" />
     <AppLayout>
-        <div class="flex flex-col space-y-12">
+        <div class="flex w-full flex-col space-y-12 py-12">
             <template v-if="user">
                 <AppearanceSection />
                 <Separator />

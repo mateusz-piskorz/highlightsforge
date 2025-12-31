@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils';
 import { computed, ref } from 'vue';
+import Button from './ui/button/Button.vue';
 
 const { className, content } = defineProps<{
     content: string;
