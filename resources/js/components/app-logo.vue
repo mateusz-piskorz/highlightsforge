@@ -1,7 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+</script>
 
 <template>
-    <div class="flex items-center gap-2">
+    <Link href="/" class="flex items-center gap-2">
         <svg
             v-bind="$attrs"
             class="size-8 fill-current text-accent"
@@ -22,5 +24,5 @@
         </svg>
 
         <p class="truncate text-sm leading-tight font-semibold">Highlights Forge</p>
-    </div>
+    </Link>
 </template>

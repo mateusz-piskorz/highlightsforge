@@ -2,7 +2,7 @@
 import AppearanceSelect from '@/components/appearance-select.vue';
 import NewPostBtn from '@/components/new-post-btn.vue';
 import PostSearchInput from '@/components/post-search-input.vue';
-import Button from '@/components/ui/button/Button.vue';
+import ProfileBtn from '@/components/profile-btn.vue';
 import DialogClose from '@/components/ui/dialog/DialogClose.vue';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import SheetTitle from '@/components/ui/sheet/SheetTitle.vue';
@@ -15,17 +15,12 @@ const { open, setOpen } = defineProps<{
     setOpen: (arg: boolean) => void;
 }>();
 
-const { user } = usePage().props.auth;
-
 const isMobile = useMobile();
 
-// const open = ref<null | 'register' | 'login' | 'post'>(null);
+const { url } = usePage();
 </script>
 
 <template>
-    <!-- <RegisterDialog :open="open === 'register'" :set-open="(val) => (open = val ? 'register' : null)" :login-action="() => (open = 'login')" /> -->
-    <!-- <LoginDialog :open="open === 'login'" :set-open="(val) => (open = val ? 'login' : null)" :register-action="() => (open = 'register')" /> -->
-
     <Sheet :open="open" @update:open="setOpen" v-if="isMobile">
         <SheetContent side="left" class="px-5 py-5">
             <div class="mb-5 flex items-center justify-between">
@@ -36,14 +31,13 @@ const isMobile = useMobile();
                     <span class="sr-only">Close</span>
                 </DialogClose>
             </div>
-            <NewPostBtn @click="() => console.log('dwa')" />
+            <NewPostBtn :onClick="() => setOpen(false)" />
 
-            <PostSearchInput :onSubmit="() => setOpen(false)" />
+            <PostSearchInput v-if="url === '/'" :onSubmit="() => setOpen(false)" />
 
             <div class="flex items-center gap-4">
                 <AppearanceSelect />
-
-                <Button variant="secondary">{{ user ? 'Profile' : 'Login' }}</Button>
+                <ProfileBtn />
             </div>
         </SheetContent>
     </Sheet>
