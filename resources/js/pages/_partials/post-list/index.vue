@@ -10,6 +10,7 @@ import { usePage } from '@inertiajs/vue3';
 import { useInfiniteQuery } from '@tanstack/vue-query';
 import { useIntersectionObserver } from '@vueuse/core';
 import axios from 'axios';
+import { Settings } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import PostActions from './post-actions.vue';
@@ -60,7 +61,7 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                     </DropdownMenu>
                 </div>
 
-                <h1 class="line-clamp-2 px-5 font-mono text-xl font-medium">{{ post.title }}</h1>
+                <h1 class="line-clamp-2 px-5 font-mono text-lg font-medium">{{ post.title }}</h1>
                 <CollapsibleText v-if="post.description" :content="post.description" class="px-5 text-muted-foreground" />
 
                 <img
