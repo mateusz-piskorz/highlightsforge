@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import AppearanceSelect from '@/components/appearance-select.vue';
-import NewPostBtn from '@/components/new-post-btn.vue';
-import PostSearchInput from '@/components/post-search-input.vue';
 import ProfileBtn from '@/components/profile-btn.vue';
 import DialogClose from '@/components/ui/dialog/DialogClose.vue';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -9,6 +7,7 @@ import SheetTitle from '@/components/ui/sheet/SheetTitle.vue';
 import { useMobile } from '@/lib/composables/useMobile';
 import { usePage } from '@inertiajs/vue3';
 import { X } from 'lucide-vue-next';
+import SettingsSidebar from '../settings-sidebar.vue';
 
 const { open, setOpen } = defineProps<{
     open: boolean;
@@ -31,13 +30,11 @@ const { url } = usePage();
                     <span class="sr-only">Close</span>
                 </DialogClose>
             </div>
-            <NewPostBtn :onClick="() => setOpen(false)" />
 
-            <PostSearchInput v-if="url === '/'" :onSubmit="() => setOpen(false)" />
-
-            <div class="flex items-center gap-4">
-                <AppearanceSelect />
-                <ProfileBtn />
+            <div class="flex flex-col items-start justify-start gap-4">
+                <SettingsSidebar v-if="['/profile', '/settings'].includes(url)" />
+                <ProfileBtn v-if="url === '/'" />
+                <AppearanceSelect :fullLabel="true" />
             </div>
         </SheetContent>
     </Sheet>

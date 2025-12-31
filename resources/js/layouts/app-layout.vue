@@ -21,10 +21,13 @@ const { url } = usePage();
     <RegisterDialog :open="open === 'register'" :set-open="(val) => (open = val ? 'register' : null)" :login-action="() => (open = 'login')" />
     <LoginDialog :open="open === 'login'" :set-open="(val) => (open = val ? 'login' : null)" :register-action="() => (open = 'register')" />
     <CreatePostDialog :open="open === 'post'" :set-open="(val) => (open = val ? 'post' : null)" />
+
     <Header />
     <main class="mx-auto min-h-[100vh] max-w-7xl pt-[68px]">
         <div v-if="['/profile', '/settings'].includes(url)" class="flex h-full">
-            <SettingsSidebar />
+            <SettingsSidebar
+                class="sticky top-[68px] hidden h-[calc(100vh-68px)] min-w-[155px] border-r px-6 pt-12 md:flex lg:min-w-[195px] lg:px-10"
+            />
             <slot />
         </div>
 
