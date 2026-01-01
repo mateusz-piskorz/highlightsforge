@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CreatePostDialog from '@/components/create-post-dialog.vue';
 import { Header } from '@/components/header';
 import LoginDialog from '@/components/login-dialog.vue';
+import PostDialog from '@/components/post-dialog.vue';
 import RegisterDialog from '@/components/register-dialog.vue';
 import SettingsSidebar from '@/components/settings-sidebar.vue';
 import { usePage } from '@inertiajs/vue3';
@@ -20,7 +20,7 @@ const { url } = usePage();
 <template>
     <RegisterDialog :open="open === 'register'" :set-open="(val) => (open = val ? 'register' : null)" :login-action="() => (open = 'login')" />
     <LoginDialog :open="open === 'login'" :set-open="(val) => (open = val ? 'login' : null)" :register-action="() => (open = 'register')" />
-    <CreatePostDialog :open="open === 'post'" :set-open="(val) => (open = val ? 'post' : null)" />
+    <PostDialog :open="open === 'post'" :set-open="(val) => (open = val ? 'post' : null)" />
 
     <Header />
     <main class="mx-auto min-h-[100vh] max-w-7xl pt-[68px]">
