@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CollapsibleText from '@/components/collapsible-text.vue';
-import CreatePostDialog from '@/components/create-post-dialog.vue';
+import PostDialog from '@/components/post-dialog.vue';
 import SpinLoader from '@/components/spin-loader.vue';
 import Card from '@/components/ui/card/Card.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -27,7 +27,7 @@ const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending
     initialPageParam: 1,
 });
 
-const open = ref<null | 'register' | 'login' | 'post'>(null);
+const open = ref<boolean>(false);
 
 const results = computed(() => data.value?.pages.flatMap((page) => page.data) ?? []);
 
@@ -35,13 +35,15 @@ const upvoteDisabled = ref(false);
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
+const selected = ref<null | { title: string; description?: string; id: number }>(null);
+
 useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
     if (isIntersecting && hasNextPage.value && !isFetchingNextPage.value) fetchNextPage();
 });
 </script>
 
 <template>
-    <CreatePostDialog :open="open === 'post'" :set-open="(val) => (open = val ? 'post' : null)" />
+    <PostDialog :open="open" :set-open="(val) => (open = val)" :post="selected" />
 
     <div class="mx-auto max-w-[900px]">
         <div class="space-y-20 px-0 sm:px-6 md:px-8 lg:px-0">
@@ -57,6 +59,16 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem @click="() => console.log('report')">Report</DropdownMenuItem>
+                            <DropdownMenuItem
+                                v-if="post.user_id === user?.id"
+                                @click="
+                                    () => {
+                                        selected = { id: post.id, title: post.title, description: post.description };
+                                        open = true;
+                                    }
+                                "
+                                >Update</DropdownMenuItem
+                            >
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

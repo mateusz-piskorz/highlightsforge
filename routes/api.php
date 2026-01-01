@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // posts
 Route::get('/posts', [PostController::class, 'index']);
 Route::post('/posts', [PostController::class, 'store'])->middleware(['auth:sanctum']);
+Route::put('/posts/{post}', [PostController::class, 'update'])->middleware(['auth:sanctum']);
 Route::post('/posts/{post}/upvote', [PostController::class, 'upvote'])->middleware(['auth:sanctum']);
 
 // comments

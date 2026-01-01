@@ -6,6 +6,8 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostUpvote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class PostController
 {
@@ -53,6 +55,36 @@ class PostController
         return response()->json([
             'success' => true,
             'message' => 'Post stored successfully'
+        ]);
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        Gate::authorize('update', $post);
+
+        $validated = $request->validate(['file' => 'sometimes|nullable|file|max:102400|mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp', 'title' => 'nullable|string', 'description' => 'nullable|string']);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            Storage::delete($post->file_path);
+            $path = $file->store('posts', 'public');
+            $post->file_path = $path;
+            $post->file_type = $file->getMimeType();
+        }
+
+        if ($validated['title']) {
+            $post->title = $validated['title'];
+        }
+
+        if ($validated['description']) {
+            $post->description = $validated['description'];
+        }
+
+        $post->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post updated successfully'
         ]);
     }
 
