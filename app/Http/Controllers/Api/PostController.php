@@ -88,6 +88,21 @@ class PostController
         ]);
     }
 
+    public function delete(Post $post)
+    {
+        Gate::authorize('delete', $post);
+
+        Storage::delete($post->file_path);
+
+        $post->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deleted successfully'
+        ]);
+
+    }
+
     public function upvote(Request $request, Post $post)
     {
         $upvote = $post->upvotedModel();

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CollapsibleText from '@/components/collapsible-text.vue';
+import ConfirmDialog from '@/components/confirm-dialog.vue';
 import PostDialog from '@/components/post-dialog.vue';
 import SpinLoader from '@/components/spin-loader.vue';
 import Card from '@/components/ui/card/Card.vue';
@@ -27,7 +28,7 @@ const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending
     initialPageParam: 1,
 });
 
-const open = ref<boolean>(false);
+const open = ref<false | 'delete' | 'upsert'>(false);
 
 const results = computed(() => data.value?.pages.flatMap((page) => page.data) ?? []);
 
@@ -43,7 +44,31 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
 </script>
 
 <template>
-    <PostDialog :open="open" :set-open="(val) => (open = val)" :post="selected" />
+    <ConfirmDialog
+        :open="open === 'delete'"
+        :setOpen="(val) => (open = val ? 'delete' : false)"
+        title="Remove post"
+        description="Do you really want to remove your Post? This is a permanent operation and can't be undone."
+        btnText="Remove"
+        @continueEvent="
+            async () => {
+                if (!selected) return;
+
+                const { data } = await axios.delete(`/api/posts/${selected.id}`);
+
+                if (!data.success) {
+                    console.log('here123');
+                    toast.error(data.message);
+                    return;
+                }
+
+                await refetch();
+                toast.success(data.message);
+                open = false;
+            }
+        "
+    />
+    <PostDialog :open="open === 'upsert'" :set-open="(val) => (open = val ? 'upsert' : false)" :post="selected" />
 
     <div class="mx-auto max-w-[900px]">
         <div class="space-y-20 px-0 sm:px-6 md:px-8 lg:px-0">
@@ -64,10 +89,20 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                                 @click="
                                     () => {
                                         selected = { id: post.id, title: post.title, description: post.description };
-                                        open = true;
+                                        open = 'upsert';
                                     }
                                 "
                                 >Update</DropdownMenuItem
+                            >
+                            <DropdownMenuItem
+                                v-if="post.user_id === user?.id"
+                                @click="
+                                    () => {
+                                        selected = { id: post.id, title: post.title, description: post.description };
+                                        open = 'delete';
+                                    }
+                                "
+                                >Delete</DropdownMenuItem
                             >
                         </DropdownMenuContent>
                     </DropdownMenu>
