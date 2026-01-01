@@ -19,7 +19,7 @@ const user = computed(() => page.props.auth.user);
 const open = ref(false);
 const openConfirm = ref(false);
 
-const form = useForm({ user_name: user.value.user_name });
+const form = useForm({ user_name: user.value?.user_name });
 
 const onSubmit = async () => {
     const { data } = await axios.post('/api/update-profile', form.data());
@@ -68,7 +68,7 @@ const onSubmit = async () => {
 
             <div class="space-y-4">
                 <Label>E-mail</Label>
-                <p v-if="user.email" class="inline-flex items-center gap-2 text-muted-foreground">
+                <p v-if="user?.email" class="inline-flex items-center gap-2 text-muted-foreground">
                     {{ user.email }} -
                     <span class="text-green-500">verified</span>
                     <DropdownMenu>
@@ -85,7 +85,7 @@ const onSubmit = async () => {
                     </DropdownMenu>
                 </p>
 
-                <Button type="button" v-if="!user.email" @click="() => (open = true)" variant="secondary">Verify E-mail</Button>
+                <Button type="button" v-if="!user?.email" @click="() => (open = true)" variant="secondary">Verify E-mail</Button>
             </div>
 
             <Button :disabled="!form.isDirty">Save</Button>

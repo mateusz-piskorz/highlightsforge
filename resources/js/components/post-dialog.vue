@@ -6,24 +6,39 @@ import { setFormApiErrors } from '@/lib/set-form-api-errors';
 import { useForm } from '@inertiajs/vue3';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
+import { watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
 import TextareaField from './fields/textarea-field/textarea-field.vue';
 
 const queryClient = useQueryClient();
 
-const { open, setOpen } = defineProps<{
+const { open, setOpen, post } = defineProps<{
+    post: { title: string; description?: string; id: number } | null;
     open: boolean;
     setOpen: (arg: boolean) => void;
 }>();
 
 const form = useForm({ title: '', file: null, description: '' });
 
+watchEffect(() => {
+    if (post) {
+        form.title = post.title;
+        form.description = post.description ?? '';
+        form.file = null;
+    } else {
+        form.reset();
+    }
+});
+
 const submit = async () => {
     const formData = new FormData();
-    formData.append('file', form.file as unknown as File);
+    if (form.file) formData.append('file', form.file as unknown as File);
     formData.append('title', form.title);
     formData.append('description', form.description);
-    const { data } = await axios.post('/api/posts', formData);
+
+    let data;
+    if (post) data = (await axios.put(`/api/posts/${post.id}`, formData)).data;
+    else data = (await axios.post('/api/posts', formData)).data;
 
     if (!data.success) {
         toast.error(data.message);
@@ -40,8 +55,8 @@ const submit = async () => {
 <template>
     <Dialog :open="open" @update:open="setOpen">
         <DialogContent>
-            <DialogTitle>Create a Post</DialogTitle>
-            <DialogDescription> Create a Post description </DialogDescription>
+            <DialogTitle>{{ post ? 'Update' : 'Create' }} a Post</DialogTitle>
+            <DialogDescription>{{ post ? 'Update' : 'Create' }} a Post description</DialogDescription>
 
             <form @submit.prevent="submit" class="space-y-6">
                 <InputField v-model="form.title" :error-message="form.errors.title" label="Title" />
@@ -63,7 +78,7 @@ const submit = async () => {
 
                 <div class="flex gap-4">
                     <Button @click="() => setOpen(false)" type="button" variant="secondary">Cancel</Button>
-                    <Button :disabled="form.processing">Create Post</Button>
+                    <Button :disabled="form.processing">{{ post ? 'Update' : 'Create' }} Post</Button>
                 </div>
             </form>
         </DialogContent>
