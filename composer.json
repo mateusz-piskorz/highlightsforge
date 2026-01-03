@@ -15,6 +15,7 @@
         "laravel/octane": "^2.13",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "pbmedia/laravel-ffmpeg": "^8.7",
         "resend/resend-php": "^1.1"
     },
     "require-dev": {
