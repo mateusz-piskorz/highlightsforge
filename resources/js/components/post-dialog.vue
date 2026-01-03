@@ -6,7 +6,7 @@ import { setFormApiErrors } from '@/lib/set-form-api-errors';
 import { useForm } from '@inertiajs/vue3';
 import { useQueryClient } from '@tanstack/vue-query';
 import axios from 'axios';
-import { watchEffect } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
 import TextareaField from './fields/textarea-field/textarea-field.vue';
 
@@ -20,6 +20,8 @@ const { open, setOpen, post } = defineProps<{
 
 const form = useForm({ title: '', file: null, description: '' });
 
+const sending = ref(false);
+const progress = ref(0);
 watchEffect(() => {
     if (post) {
         form.title = post.title;
@@ -31,24 +33,46 @@ watchEffect(() => {
 });
 
 const submit = async () => {
+    sending.value = true;
     const formData = new FormData();
     if (form.file) formData.append('file', form.file as unknown as File);
     formData.append('title', form.title);
     formData.append('description', form.description);
 
     let data;
-    if (post) data = (await axios.put(`/api/posts/${post.id}`, formData)).data;
-    else data = (await axios.post('/api/posts', formData)).data;
+    if (post) {
+        data = (
+            await axios.put(`/api/posts/${post.id}`, formData, {
+                onUploadProgress: (progressEvent) => {
+                    const loaded = progressEvent.loaded;
+                    const total = progressEvent.total || 0;
+                    progress.value = Math.round((loaded / total) * 100);
+                },
+            })
+        ).data;
+    } else {
+        data = (
+            await axios.post('/api/posts', formData, {
+                onUploadProgress: (progressEvent) => {
+                    const loaded = progressEvent.loaded;
+                    const total = progressEvent.total || 0;
+                    progress.value = Math.round((loaded / total) * 100);
+                },
+            })
+        ).data;
+    }
 
     if (!data.success) {
         toast.error(data.message);
         setFormApiErrors({ form, data });
+        sending.value = false;
         return;
     }
 
     toast.success(data.message);
     await queryClient.refetchQueries({ queryKey: ['posts'] });
     setOpen(false);
+    sending.value = false;
 };
 </script>
 
@@ -58,7 +82,7 @@ const submit = async () => {
             <DialogTitle>{{ post ? 'Update' : 'Create' }} a Post</DialogTitle>
             <DialogDescription>{{ post ? 'Update' : 'Create' }} a Post description</DialogDescription>
 
-            <form @submit.prevent="submit" class="space-y-6">
+            <form v-if="!sending" @submit.prevent="submit" class="space-y-6">
                 <InputField v-model="form.title" :error-message="form.errors.title" label="Title" />
                 <TextareaField
                     v-model="form.description"
@@ -81,6 +105,11 @@ const submit = async () => {
                     <Button :disabled="form.processing">{{ post ? 'Update' : 'Create' }} Post</Button>
                 </div>
             </form>
+
+            <div v-if="sending">
+                <p>Sending...</p>
+                <progress max="100" :value.prop="progress" />
+            </div>
         </DialogContent>
     </Dialog>
 </template>
