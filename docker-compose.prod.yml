@@ -59,6 +59,10 @@ services:
     restart: unless-stopped
     networks:
       - app_prod_stg
+    volumes:
+      - type: bind
+        source: /var/www/html/prod/storage
+        target: /var/www/html/storage/app/public
 
   db:
     image: postgres:17.6
@@ -71,6 +75,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - app_prod_stg
+    ports:
+      - '5432:5432'
 
 volumes:
   db_data_prod:
