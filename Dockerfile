@@ -64,6 +64,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libssl-dev \
     curl \
     libpq-dev \
+    ffmpeg \
   && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install sockets pcntl pdo pdo_pgsql || true

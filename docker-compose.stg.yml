@@ -59,6 +59,10 @@ services:
     restart: unless-stopped
     networks:
       - app_net_stg
+    volumes:
+      - type: bind
+        source: /var/www/html/stg/storage
+        target: /var/www/html/storage/app/public
 
   db:
     image: postgres:17.6
