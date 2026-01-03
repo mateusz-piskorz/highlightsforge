@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Jobs\ProcessPost;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostUpvote;
@@ -46,11 +47,14 @@ class PostController
 
     public function store(Request $request)
     {
+
         $validated = $request->validate(['file' => 'required|file|max:102400|mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp', 'title' => 'required|string', 'description' => 'nullable|string']);
         $file = $request->file('file');
         $path = $file->store('posts', 'public');
 
-        Post::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'description' => $validated['description'], 'file_path' => $path, 'file_type' => $file->getMimeType()]);
+        $post = Post::create(['user_id' => $request->user()->id, 'title' => $validated['title'], 'description' => $validated['description'], 'file_path' => $path, 'file_type' => $file->getMimeType()]);
+
+        ProcessPost::dispatch($post);
 
         return response()->json([
             'success' => true,
