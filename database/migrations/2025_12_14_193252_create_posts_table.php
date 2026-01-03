@@ -15,6 +15,7 @@ return new class() extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string("title");
+            $table->enum('status', ['pending', 'draft', 'published'])->default('pending');
             $table->text("description")->nullable();
             $table->string("file_path");
             $table->string("file_type");
