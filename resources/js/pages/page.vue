@@ -9,7 +9,7 @@ import { Head } from '@inertiajs/vue3';
     <Head title="Home" />
 
     <AppLayout>
-        <PostsActions className="mx-auto max-w-[900px]" />
-        <PostList className="mx-auto" />
+        <PostsActions className="mx-auto max-w-[900px] px-5 sm:px-6 md:px-8" />
+        <PostList className="mx-auto sm:px-6 md:px-8" />
     </AppLayout>
 </template>
