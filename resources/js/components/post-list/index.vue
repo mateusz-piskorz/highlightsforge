@@ -6,7 +6,9 @@ import SpinLoader from '@/components/spin-loader.vue';
 import Card from '@/components/ui/card/Card.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import UserAvatar from '@/components/user-avatar.vue';
+import { useCommonDialogs } from '@/lib/composables/useCommonDialogs';
 import { usePostFilters } from '@/lib/composables/usePostFilters';
+import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/vue3';
 import { useInfiniteQuery } from '@tanstack/vue-query';
 import { useIntersectionObserver } from '@vueuse/core';
@@ -16,17 +18,22 @@ import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import PostActions from './post-actions.vue';
 
-defineEmits(['commentsEvent']);
+const { authorId, className } = defineProps<{ authorId?: number; className?: string }>();
+
 const { user } = usePage().props.auth;
 
 const { q, sorting } = usePostFilters();
 
 const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = useInfiniteQuery({
     queryKey: ['posts', q, sorting],
-    queryFn: async ({ pageParam }) => (await axios.get('api/posts', { params: { q: q.value, sorting: sorting.value, page: pageParam } })).data,
+    queryFn: async ({ pageParam }) => {
+        return (await axios.get('api/posts', { params: { authorId, q: q.value, sorting: sorting.value, page: pageParam } })).data;
+    },
     getNextPageParam: (lastPage) => (lastPage.next_page_url ? lastPage.current_page + 1 : undefined),
     initialPageParam: 1,
 });
+
+const { setSelectedPost } = useCommonDialogs();
 
 const open = ref<false | 'delete' | 'upsert'>(false);
 
@@ -70,8 +77,8 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
     />
     <PostDialog :open="open === 'upsert'" :set-open="(val) => (open = val ? 'upsert' : false)" :post="selected" />
 
-    <div class="mx-auto max-w-[900px]">
-        <div class="space-y-20 px-0 sm:px-6 md:px-8 lg:px-0">
+    <div :class="cn('max-w-[900px]', className)">
+        <div class="space-y-20">
             <Card v-for="post in results" :key="post.id" class="mx-auto flex min-w-[310px] flex-col rounded-none sm:rounded-xl lg:min-w-[660px]">
                 <div class="flex items-center justify-between px-4">
                     <UserAvatar :name="post.user.user_name" :src="post.user.avatar" :commentedAt="post.created_at" />
@@ -126,7 +133,7 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                 </video>
 
                 <PostActions
-                    @commentsClick="$emit('commentsEvent', { id: post.id, totalResponses: post.comments_count })"
+                    @commentsClick="() => setSelectedPost({ id: post.id, totalResponses: post.comments_count })"
                     :comments_count="post.comments_count"
                     :isOwner="post.user.id === user?.id"
                     :upvoted="post.upvoted"
