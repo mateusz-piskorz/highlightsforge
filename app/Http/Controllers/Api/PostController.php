@@ -14,12 +14,16 @@ class PostController
 {
     public function index(Request $request)
     {
-        $validated = $request->validate(['limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
+        $validated = $request->validate(['authorId' => 'nullable|integer', 'limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
         $limit = $request->input('limit', 20);
 
         $query = Post::query();
         $q = $validated['q'] ?? null;
         $sorting = $validated['sorting'] ?? null;
+
+        if ($authorId = $validated['authorId'] ?? null) {
+            $query->where('user_id', $authorId);
+        }
         if ($q) {
             $query->where('title', 'ilike', "%{$q}%");
         }
