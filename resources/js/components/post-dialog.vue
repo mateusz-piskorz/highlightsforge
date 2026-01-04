@@ -10,13 +10,13 @@ import { ref, watchEffect } from 'vue';
 import { toast } from 'vue-sonner';
 import TextareaField from './fields/textarea-field/textarea-field.vue';
 
-const queryClient = useQueryClient();
-
 const { open, setOpen, post } = defineProps<{
-    post: { title: string; description?: string; id: number } | null;
+    post?: { title: string; description?: string; id: number } | null;
     open: boolean;
     setOpen: (arg: boolean) => void;
 }>();
+
+const queryClient = useQueryClient();
 
 const form = useForm({ title: '', file: null, description: '' });
 
