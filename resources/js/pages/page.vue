@@ -1,36 +1,15 @@
 <script setup lang="ts">
+import { PostList } from '@/components/post-list';
+import PostsActions from '@/components/posts-actions.vue';
 import AppLayout from '@/layouts/app-layout.vue';
 import { Head } from '@inertiajs/vue3';
-import { ref, provide } from 'vue';
-import { PostList } from './_partials/post-list';
-import { CommentsDialog } from './_partials/comments-dialog';
-import { SortOptions } from '@/lib/composables/usePostFilters';
-import PostsActions from './_partials/posts-actions.vue';
-
-const selectedPost = ref<{ id: number; totalResponses: number } | null>(null);
-
-const q = ref<string | null>(null);
-const setQ = (val: string) => (q.value = val);
-
-const sorting = ref<SortOptions>('featured');
-const setSorting = (val: SortOptions) => (sorting.value = val);
-
-provide('post-filters', { q, setQ, sorting, setSorting });
 </script>
 
 <template>
     <Head title="Home" />
 
     <AppLayout>
-        <PostsActions />
-        <PostList @commentsEvent="(args: { id: number; totalResponses: number }) => (selectedPost = args)" />
+        <PostsActions className="mx-auto max-w-[900px] px-5 sm:px-6 md:px-8" />
+        <PostList className="mx-auto sm:px-6 md:px-8" />
     </AppLayout>
-
-    <CommentsDialog
-        v-if="selectedPost"
-        :totalResponses="selectedPost.totalResponses"
-        :open="Boolean(selectedPost)"
-        :setOpen="(val) => (selectedPost = val ? selectedPost : null)"
-        :postId="selectedPost.id"
-    />
 </template>

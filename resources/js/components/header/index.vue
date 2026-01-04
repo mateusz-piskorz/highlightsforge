@@ -23,7 +23,7 @@ const { url } = usePage();
 
             <Button size="icon" class="md:hidden" variant="secondary" @click="() => (openMenu = true)"><Menu /></Button>
 
-            <PostSearchInput v-if="url === '/'" className="hidden md:block" />
+            <PostSearchInput v-if="['/', '/profile'].includes(url)" className="hidden md:block" />
 
             <div class="hidden items-center gap-4 md:flex">
                 <AppearanceSelect />
