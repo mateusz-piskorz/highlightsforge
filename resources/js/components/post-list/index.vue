@@ -17,17 +17,23 @@ import { Settings } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import PostActions from './post-actions.vue';
+import StatusSelect from './status-select.vue';
 
-const { authorId, className } = defineProps<{ authorId?: number; className?: string }>();
+const { authorId, className, editMode } = defineProps<{ authorId?: number; className?: string; editMode?: boolean }>();
 
-const { user } = usePage().props.auth;
+const page = usePage();
+const { user } = page.props.auth;
 
 const { q, sorting } = usePostFilters();
 
 const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = useInfiniteQuery({
     queryKey: ['posts', q, sorting],
     queryFn: async ({ pageParam }) => {
-        return (await axios.get('api/posts', { params: { authorId, q: q.value, sorting: sorting.value, page: pageParam } })).data;
+        return (
+            await axios.get('api/posts', {
+                params: { authorId, q: q.value, sorting: sorting.value, page: pageParam, ...(!editMode && { status: 'published' }) },
+            })
+        ).data;
     },
     getNextPageParam: (lastPage) => (lastPage.next_page_url ? lastPage.current_page + 1 : undefined),
     initialPageParam: 1,
@@ -82,37 +88,40 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
             <Card v-for="post in results" :key="post.id" class="mx-auto flex min-w-[310px] flex-col rounded-none sm:rounded-xl lg:min-w-[660px]">
                 <div class="flex items-center justify-between px-4">
                     <UserAvatar :name="post.user.user_name" :src="post.user.avatar" :commentedAt="post.created_at" />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" class="size-7">
-                                <Settings class="h-[1.2rem] w-[1.2rem]" />
-                                <span class="sr-only">Settings</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem @click="() => console.log('report')">Report</DropdownMenuItem>
-                            <DropdownMenuItem
-                                v-if="post.user_id === user?.id"
-                                @click="
-                                    () => {
-                                        selected = { id: post.id, title: post.title, description: post.description };
-                                        open = 'upsert';
-                                    }
-                                "
-                                >Update</DropdownMenuItem
-                            >
-                            <DropdownMenuItem
-                                v-if="post.user_id === user?.id"
-                                @click="
-                                    () => {
-                                        selected = { id: post.id, title: post.title, description: post.description };
-                                        open = 'delete';
-                                    }
-                                "
-                                >Delete</DropdownMenuItem
-                            >
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div class="flex items-center gap-4">
+                        <StatusSelect v-if="editMode" :status="post.status" :refetch="refetch" :id="post.id" />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" class="size-7">
+                                    <Settings class="h-[1.2rem] w-[1.2rem]" />
+                                    <span class="sr-only">Settings</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem @click="() => console.log('report')">Report</DropdownMenuItem>
+                                <DropdownMenuItem
+                                    v-if="post.user_id === user?.id"
+                                    @click="
+                                        () => {
+                                            selected = { id: post.id, title: post.title, description: post.description };
+                                            open = 'upsert';
+                                        }
+                                    "
+                                    >Update</DropdownMenuItem
+                                >
+                                <DropdownMenuItem
+                                    v-if="post.user_id === user?.id"
+                                    @click="
+                                        () => {
+                                            selected = { id: post.id, title: post.title, description: post.description };
+                                            open = 'delete';
+                                        }
+                                    "
+                                    >Delete</DropdownMenuItem
+                                >
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
 
                 <h1 class="line-clamp-2 px-5 font-mono text-lg font-medium">{{ post.title }}</h1>
