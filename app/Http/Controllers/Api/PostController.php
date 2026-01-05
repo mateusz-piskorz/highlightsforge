@@ -14,19 +14,17 @@ class PostController
 {
     public function index(Request $request)
     {
-        $validated = $request->validate(['authorId' => 'nullable|integer', 'limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
+        $validated = $request->validate(['status' => 'nullable|in:pending,draft,published', 'authorId' => 'nullable|integer', 'limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
         $limit = $request->input('limit', 20);
 
         $query = Post::query();
         $q = $validated['q'] ?? null;
         $sorting = $validated['sorting'] ?? null;
+        $status = $validated['status'] ?? null;
 
-        if ($authorId = $validated['authorId'] ?? null) {
-            $query->where('user_id', $authorId);
-        }
-        if ($q) {
-            $query->where('title', 'ilike', "%{$q}%");
-        }
+        if ($authorId = $validated['authorId'] ?? null) {$query->where('user_id', $authorId);}
+        if ($q) {$query->where('title', 'ilike', "%{$q}%");}
+        if ($status) {$query->where('status', $status);}
 
         $query->with('user')->withCount('comments')->withCount('upvotes');
 
@@ -78,6 +76,7 @@ class PostController
             $path = $file->store('posts', 'public');
             $post->file_path = $path;
             $post->file_type = $file->getMimeType();
+            $post->status = 'pending';
         }
 
         if ($validated['title']) {
@@ -89,6 +88,8 @@ class PostController
         }
 
         $post->save();
+
+        if ($request->hasFile('file')) {ProcessPost::dispatch($post);}
 
         return response()->json([
             'success' => true,
@@ -107,6 +108,29 @@ class PostController
         return response()->json([
             'success' => true,
             'message' => 'Post deleted successfully'
+        ]);
+
+    }
+
+    public function status(Request $request, Post $post)
+    {
+        Gate::authorize('update', $post);
+
+        $validated = $request->validate(['status' => 'required|in:draft,published']);
+
+        if ($post->status === 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post is in pending status'
+            ]);
+        }
+
+        $post->status = $validated['status'];
+        $post->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post status updated successfully'
         ]);
 
     }

@@ -15,7 +15,7 @@ const { user } = usePage().props.auth;
             <Heading title="Posts" description="Manage your posts and see details" class="px-5 sm:px-6 md:px-8 lg:px-10" />
 
             <PostsActions className="px-5 sm:px-6 md:px-8 lg:px-10" />
-            <PostList :authorId="user?.id" className=" sm:px-6 md:px-8 lg:px-10" />
+            <PostList editMode :authorId="user?.id" className=" sm:px-6 md:px-8 lg:px-10" />
         </div>
     </AppLayout>
 </template>
