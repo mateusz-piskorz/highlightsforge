@@ -16,7 +16,7 @@ const { postId } = useCommentsDialog();
 const { initContent, parentId, commentId, onCancel, onSuccess, className } = defineProps<{
     initContent?: string;
     commentId?: number;
-    parentId?: number;
+    parentId: number | null;
     onCancel?: () => void;
     onSuccess?: () => void;
     className?: string;
