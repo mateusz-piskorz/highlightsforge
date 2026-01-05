@@ -62,7 +62,7 @@ const activeComment = computed(() => {
                 Replies
             </div>
 
-            <CommentForm v-if="!activeComment" />
+            <CommentForm v-if="!activeComment" :parentId="null" />
             <Comment
                 v-if="activeComment"
                 :showRepliesInit="true"
