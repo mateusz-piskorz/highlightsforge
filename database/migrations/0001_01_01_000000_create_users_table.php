@@ -16,6 +16,7 @@ return new class() extends Migration
             $table->string('user_name');
             $table->string('avatar')->nullable();
             $table->string('email')->unique()->nullable();
+            $table->enum('role', ['user', 'admin'])->default('user');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -43,8 +44,8 @@ return new class() extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
         Schema::dropIfExists('email_verify_codes');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('users');
     }
 };

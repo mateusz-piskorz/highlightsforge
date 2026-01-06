@@ -44,7 +44,7 @@ const { url } = usePage();
 
     <Header />
     <main class="mx-auto min-h-[100vh] max-w-7xl pt-[68px]">
-        <div v-if="['/profile', '/settings'].includes(url)" class="flex h-full">
+        <div v-if="['/profile', '/settings', '/reports'].includes(url)" class="flex h-full">
             <SettingsSidebar
                 class="sticky top-[68px] hidden h-[calc(100vh-68px)] min-w-[155px] border-r px-6 pt-12 md:flex lg:min-w-[195px] lg:px-10"
             />

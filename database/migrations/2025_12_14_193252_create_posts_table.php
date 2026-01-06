@@ -15,7 +15,8 @@ return new class() extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string("title");
-            $table->enum('status', ['pending', 'draft', 'published'])->default('pending');
+            $table->enum('status', ['pending', 'draft', 'published', 'reported', 'banned'])->default('pending');
+            $table->tinyInteger('approved_x_times')->default(0);
             $table->text("description")->nullable();
             $table->string("file_path");
             $table->string("file_type");
@@ -28,6 +29,13 @@ return new class() extends Migration
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->unique(['user_id', 'post_id']);
         });
+
+        Schema::create('post_reports', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->unique(['user_id', 'post_id']);
+        });
     }
 
     /**
@@ -35,7 +43,8 @@ return new class() extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('post_reports');
         Schema::dropIfExists('post_upvotes');
+        Schema::dropIfExists('posts');
     }
 };

@@ -12,7 +12,9 @@ Route::post('/posts', [PostController::class, 'store'])->middleware(['auth:sanct
 Route::put('/posts/{post}', [PostController::class, 'update'])->middleware(['auth:sanctum']);
 Route::delete('/posts/{post}', [PostController::class, 'delete'])->middleware(['auth:sanctum']);
 Route::post('/posts/{post}/upvote', [PostController::class, 'upvote'])->middleware(['auth:sanctum']);
+Route::post('/posts/{post}/report', [PostController::class, 'report'])->middleware(['auth:sanctum']);
 Route::post('/posts/{post}/status', [PostController::class, 'status'])->middleware(['auth:sanctum']);
+Route::post('/posts/{post}/admin-review', [PostController::class, 'adminReview'])->middleware(['auth:sanctum']);
 
 // comments
 Route::get('/comments', [CommentController::class, 'index']);
