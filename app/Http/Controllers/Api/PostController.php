@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Jobs\ProcessPost;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\PostReport;
 use App\Models\PostUpvote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -14,7 +15,7 @@ class PostController
 {
     public function index(Request $request)
     {
-        $validated = $request->validate(['status' => 'nullable|in:pending,draft,published', 'authorId' => 'nullable|integer', 'limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
+        $validated = $request->validate(['status' => 'nullable|in:pending,draft,published,reported', 'authorId' => 'nullable|integer', 'limit' => 'nullable|integer', 'q' => 'string|nullable', 'sorting' => 'in:featured,new-posts,latest-activity|nullable']);
         $limit = $request->input('limit', 20);
 
         $query = Post::query();
@@ -26,7 +27,7 @@ class PostController
         if ($q) {$query->where('title', 'ilike', "%{$q}%");}
         if ($status) {$query->where('status', $status);}
 
-        $query->with('user')->withCount('comments')->withCount('upvotes');
+        $query->with('user')->withCount('comments')->withCount('upvotes')->withCount('reports');
 
         if ($sorting) {
             if ($sorting === 'featured') {
@@ -118,10 +119,10 @@ class PostController
 
         $validated = $request->validate(['status' => 'required|in:draft,published']);
 
-        if ($post->status === 'pending') {
+        if (in_array($post->status, ['pending', 'reported', 'banned'])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Post is in pending status'
+                'message' => 'Post is ' . $post->status
             ]);
         }
 
@@ -131,6 +132,27 @@ class PostController
         return response()->json([
             'success' => true,
             'message' => 'Post status updated successfully'
+        ]);
+
+    }
+
+    public function adminReview(Request $request, Post $post)
+    {
+        Gate::authorize('update', $post);
+
+        $review = $request->validate(['review' => 'required|in:ban,approve'])['review'];
+
+        if ($review === 'ban') {
+            $post->status = 'banned';
+        } else {
+            $post->status = 'published';
+            $post->increment('approved_x_times');
+        }
+        $post->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post reviewed successfully'
         ]);
 
     }
@@ -148,6 +170,36 @@ class PostController
         return response()->json([
             'success' => true,
             'message' => 'Post upvoted successfully'
+        ]);
+    }
+
+    public function report(Request $request, Post $post)
+    {
+        if (in_array($post->status, ['pending', 'reported', 'banned'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post is ' . $post->status
+            ]);
+        }
+
+        $report = $post->reportedModel();
+
+        if ($report) {
+            $report->delete();
+        } else {
+            PostReport::create(['user_id' => $request->user()->id, 'post_id' => $post->id]);
+        }
+
+        $post->loadCount('reports');
+
+        if ($post->reports_count >= $post->report_threshold) {
+            $post->status = 'reported';
+            $post->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post reported successfully'
         ]);
     }
 

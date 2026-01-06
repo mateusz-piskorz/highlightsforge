@@ -11,7 +11,7 @@ const loading = ref(false);
 
 <template>
     <Select
-        :disabled="status === 'pending'"
+        :disabled="['pending', 'reported', 'banned'].includes(status)"
         :model-value="status"
         v-on:update:model-value="
             async (val) => {
@@ -37,6 +37,8 @@ const loading = ref(false);
             <SelectItem disabled value="pending">Pending</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="published">Published</SelectItem>
+            <SelectItem disabled value="reported">Reported</SelectItem>
+            <SelectItem disabled value="banned">Banned</SelectItem>
         </SelectContent>
     </Select>
 </template>

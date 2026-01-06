@@ -6,7 +6,9 @@ import Button from './ui/button/Button.vue';
 
 const { className } = defineProps<{ className?: string }>();
 
-const { url } = usePage();
+const page = usePage();
+const { url } = page;
+const { user } = page.props.auth;
 </script>
 
 <template>
@@ -19,6 +21,9 @@ const { url } = usePage();
         </Button>
         <Button class="justify-start py-5" :variant="url === '/settings' ? 'secondary' : 'outline'" as-child>
             <Link href="/settings"><Settings class="size-4" />Settings</Link>
+        </Button>
+        <Button v-if="user?.role === 'admin'" class="justify-start py-5" :variant="url === '/reported-posts' ? 'secondary' : 'outline'" as-child>
+            <Link href="/reports"><Settings class="size-4" />Reports</Link>
         </Button>
     </nav>
 </template>

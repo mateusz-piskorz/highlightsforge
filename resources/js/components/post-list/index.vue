@@ -16,10 +16,11 @@ import axios from 'axios';
 import { Settings } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import Button from '../ui/button/Button.vue';
 import PostActions from './post-actions.vue';
 import StatusSelect from './status-select.vue';
 
-const { authorId, className, editMode } = defineProps<{ authorId?: number; className?: string; editMode?: boolean }>();
+const { authorId, className, mode } = defineProps<{ authorId?: number; className?: string; mode?: 'edit' | 'report' }>();
 
 const page = usePage();
 const { user } = page.props.auth;
@@ -31,7 +32,13 @@ const { data, refetch, fetchNextPage, hasNextPage, isFetchingNextPage, isPending
     queryFn: async ({ pageParam }) => {
         return (
             await axios.get('api/posts', {
-                params: { authorId, q: q.value, sorting: sorting.value, page: pageParam, ...(!editMode && { status: 'published' }) },
+                params: {
+                    authorId,
+                    q: q.value,
+                    sorting: sorting.value,
+                    page: pageParam,
+                    status: mode === 'report' ? 'reported' : mode === 'edit' ? null : 'published',
+                },
             })
         ).data;
     },
@@ -46,6 +53,7 @@ const open = ref<false | 'delete' | 'upsert'>(false);
 const results = computed(() => data.value?.pages.flatMap((page) => page.data) ?? []);
 
 const upvoteDisabled = ref(false);
+const reportDisabled = ref(false);
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
@@ -54,6 +62,18 @@ const selected = ref<null | { title: string; description?: string; id: number }>
 useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
     if (isIntersecting && hasNextPage.value && !isFetchingNextPage.value) fetchNextPage();
 });
+
+const adminReviewHandler = async ({ postId, review }: { postId: number; review: 'approve' | 'ban' }) => {
+    const { data } = await axios.post(`/api/posts/${postId}/admin-review`, { review });
+
+    if (!data.success) {
+        toast.error(data.message);
+        return;
+    }
+
+    await refetch();
+    toast.success(data.message);
+};
 </script>
 
 <template>
@@ -89,7 +109,21 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                 <div class="flex items-center justify-between px-4">
                     <UserAvatar :name="post.user.user_name" :src="post.user.avatar" :commentedAt="post.created_at" />
                     <div class="flex items-center gap-4">
-                        <StatusSelect v-if="editMode" :status="post.status" :refetch="refetch" :id="post.id" />
+                        <StatusSelect v-if="mode === 'edit'" :status="post.status" :refetch="refetch" :id="post.id" />
+                        <Button
+                            v-if="mode === 'report'"
+                            @click="() => adminReviewHandler({ postId: post.id, review: 'approve' })"
+                            size="sm"
+                            variant="secondary"
+                            >Approve</Button
+                        >
+                        <Button
+                            v-if="mode === 'report'"
+                            @click="() => adminReviewHandler({ postId: post.id, review: 'ban' })"
+                            size="sm"
+                            variant="destructive"
+                            >Ban</Button
+                        >
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" class="size-7">
@@ -98,7 +132,25 @@ useIntersectionObserver(loadMoreTrigger, ([{ isIntersecting }]) => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem @click="() => console.log('report')">Report</DropdownMenuItem>
+                                <DropdownMenuItem
+                                    :disabled="reportDisabled"
+                                    @click="
+                                        async () => {
+                                            reportDisabled = true;
+                                            const { data } = await axios.post(`/api/posts/${post.id}/report`);
+
+                                            if (!data.success) {
+                                                toast.error(data.message);
+                                                return;
+                                            }
+
+                                            await refetch();
+                                            toast.success(data.message);
+                                            reportDisabled = false;
+                                        }
+                                    "
+                                    >Report {{ post.reports_count }} / {{ post.report_threshold }}</DropdownMenuItem
+                                >
                                 <DropdownMenuItem
                                     v-if="post.user_id === user?.id"
                                     @click="
