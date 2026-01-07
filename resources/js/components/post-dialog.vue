@@ -99,6 +99,7 @@ const submit = async () => {
                     :error-message="form.errors.file"
                     label="File"
                 />
+                <p class="text-xs">Max img size is 15mb</p>
 
                 <div class="flex gap-4">
                     <Button @click="() => setOpen(false)" type="button" variant="secondary">Cancel</Button>

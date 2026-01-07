@@ -51,7 +51,28 @@ class PostController
     public function store(Request $request)
     {
 
-        $validated = $request->validate(['file' => 'required|file|max:102400|mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp', 'title' => 'required|string', 'description' => 'nullable|string']);
+        $validated = $request->validate([
+            'file'        => [
+                'required',
+                'file',
+                'mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp',
+                function ($attribute, $value, $fail) {
+
+                    $mime = $value->getMimeType();
+                    $size = $value->getSize() / 1024;
+
+                    if (str_starts_with($mime, 'video/') && $size > 56320) {
+                        $fail("The video must not be greater than 55MB.");
+                    }
+
+                    if (str_starts_with($mime, 'image/') && $size > 15360) {
+                        $fail("The image must not be greater than 15MB.");
+                    }
+                }
+            ],
+            'title'       => 'nullable|string',
+            'description' => 'nullable|string'
+        ]);
         $file = $request->file('file');
         $path = $file->store('posts', 'public');
 
@@ -69,7 +90,28 @@ class PostController
     {
         Gate::authorize('update', $post);
 
-        $validated = $request->validate(['file' => 'sometimes|nullable|file|max:102400|mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp', 'title' => 'nullable|string', 'description' => 'nullable|string']);
+        $validated = $request->validate([
+            'file'        => [
+                'required',
+                'file',
+                'mimetypes:video/mp4,video/webm,image/jpeg,image/png,image/webp',
+                function ($attribute, $value, $fail) {
+
+                    $mime = $value->getMimeType();
+                    $size = $value->getSize() / 1024;
+
+                    if (str_starts_with($mime, 'video/') && $size > 56320) {
+                        $fail("The video must not be greater than 55MB.");
+                    }
+
+                    if (str_starts_with($mime, 'image/') && $size > 15360) {
+                        $fail("The image must not be greater than 15MB.");
+                    }
+                }
+            ],
+            'title'       => 'nullable|string',
+            'description' => 'nullable|string'
+        ]);
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');

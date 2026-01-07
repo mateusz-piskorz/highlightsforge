@@ -4,14 +4,14 @@ import PostSearchInput from '@/components/post-search-input.vue';
 import PostSortInput from '@/components/post-sort-input.vue';
 import { cn } from '@/lib/utils';
 
-const { className } = defineProps<{ className?: string }>();
+const { className, displayNewPostBtn } = defineProps<{ className?: string; displayNewPostBtn?: boolean }>();
 </script>
 
 <template>
     <div :class="cn(className)">
         <div class="my-10 space-y-5 lg:px-0">
             <PostSearchInput className="md:hidden" />
-            <NewPostBtn />
+            <NewPostBtn v-if="displayNewPostBtn" />
             <PostSortInput />
         </div>
     </div>
