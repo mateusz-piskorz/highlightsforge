@@ -99,7 +99,9 @@ class AuthController
     {
         $email = $request->validate(['email' => 'required|email|max:250|unique:users,email'])['email'];
         $code = Str::random(6);
+
         Gate::authorize('sendVerifyCode', [EmailVerifyCode::class, $email]);
+
         $codeRecord = $request->user()->emailVerifyCodes->firstWhere('email', $email);
         if ($codeRecord) {
             $codeRecord->code = $code;
