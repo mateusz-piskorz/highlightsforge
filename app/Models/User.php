@@ -17,7 +17,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'user_name',
-        'email'
+        'email',
+        'role'
     ];
 
     public function emailVerifyCodes(): HasMany
