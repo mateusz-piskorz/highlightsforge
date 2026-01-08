@@ -50,6 +50,7 @@ class PostController
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Post::class);
 
         $validated = $request->validate([
             'file'        => [
