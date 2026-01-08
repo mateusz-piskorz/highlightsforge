@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -45,6 +46,8 @@ class AuthController
             ]);
         }
 
+        Gate::authorize('sendVerifyCode', [EmailVerifyCode::class, $email]);
+
         $code = Str::random(6);
         $codeRecord = $user->emailVerifyCodes->firstWhere('email', $email);
         if ($codeRecord) {
@@ -64,6 +67,7 @@ class AuthController
 
     public function loginStep2(Request $request)
     {
+
         $validated = $request->validate(['code' => 'required|array|size:6']);
         $code = implode($validated['code']);
         $codeRecord = EmailVerifyCode::query()->where('code', $code)->where('updated_at', '>=', Carbon::now()->subMinutes(5))->first();
@@ -95,6 +99,7 @@ class AuthController
     {
         $email = $request->validate(['email' => 'required|email|max:250|unique:users,email'])['email'];
         $code = Str::random(6);
+        Gate::authorize('sendVerifyCode', [EmailVerifyCode::class, $email]);
         $codeRecord = $request->user()->emailVerifyCodes->firstWhere('email', $email);
         if ($codeRecord) {
             $codeRecord->code = $code;
